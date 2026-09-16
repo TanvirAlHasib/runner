@@ -142,6 +142,101 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ],
                   ),
+
+                  // line chart
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  SizedBox(
+                    height: 300,
+                    width: double.infinity,
+                    child: LineChart(
+
+                      LineChartData(
+                        maxX: 100,
+                        minX: 0,
+                        maxY: 100,
+                        minY: 0,
+                        borderData: FlBorderData(
+                          show: false
+                        ),
+                        titlesData: FlTitlesData(
+                          show: true,
+                          bottomTitles: AxisTitles(
+                            sideTitleAlignment: SideTitleAlignment.outside,
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              getTitlesWidget: (value, meta) {
+                                final days = [
+                                  'Sat',
+                                  'Sun',
+                                  'Mon',
+                                  'Tue',
+                                  'Wed',
+                                  'Thu',
+                                  'Fri',
+                                ];
+                                if (value < 0 || value > 6) {
+                                  return const SizedBox();
+                                }
+                                return Text(
+                                  days[value.toInt()],
+                                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                                    color: Color(ColorConstraints.bodyFontColor),
+                                    fontWeight: FontWeight.w800
+                                  ),
+                                );
+                              },
+                            )
+                          ),
+                          leftTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              getTitlesWidget: (value, meta) {
+                                return Text("10", style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                                    color: Color(ColorConstraints.bodyFontColor),
+                                    fontWeight: FontWeight.w800
+                                ),);
+                              },
+                            ),
+                            sideTitleAlignment: SideTitleAlignment.outside
+                          ),
+                          rightTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: false
+                            )
+                          ),
+                          topTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: false
+                            )
+                          )
+                        ),
+
+                        backgroundColor: Colors.black,
+
+                        lineBarsData: [
+                          LineChartBarData(
+                            isCurved: true,
+                            show: true,
+                            spots: [
+                              FlSpot(0, 35),
+                              FlSpot(10, 20),
+                              FlSpot(25, 50),
+                              FlSpot(35, 10),
+                              FlSpot(45, 20),
+                              FlSpot(60, 35),
+                              FlSpot(75, 0),
+                            ],
+                            color: Color(ColorConstraints.buttonColor),
+                            belowBarData: BarAreaData(
+                              show: false,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
