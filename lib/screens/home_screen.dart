@@ -148,12 +148,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     height: 30,
                   ),
                   SizedBox(
-                    height: 300,
+                    height: 350,
                     width: double.infinity,
                     child: LineChart(
-
+                      duration: Duration(milliseconds: 150),
+                      curve: Curves.linear,
                       LineChartData(
-                        maxX: 100,
+                        maxX: 7,
                         minX: 0,
                         maxY: 100,
                         minY: 0,
@@ -165,7 +166,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           bottomTitles: AxisTitles(
                             sideTitleAlignment: SideTitleAlignment.outside,
                             sideTitles: SideTitles(
+                              maxIncluded: true,
                               showTitles: true,
+                              interval: 1,
                               getTitlesWidget: (value, meta) {
                                 final days = [
                                   'Sat',
@@ -191,9 +194,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           leftTitles: AxisTitles(
                             sideTitles: SideTitles(
+                              reservedSize: 35,
                               showTitles: true,
+                              interval: 10,
                               getTitlesWidget: (value, meta) {
-                                return Text("10", style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                                return Text(value.toInt().toString(), style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                                     color: Color(ColorConstraints.bodyFontColor),
                                     fontWeight: FontWeight.w800
                                 ),);
@@ -221,12 +226,12 @@ class _HomeScreenState extends State<HomeScreen> {
                             show: true,
                             spots: [
                               FlSpot(0, 35),
-                              FlSpot(10, 20),
-                              FlSpot(25, 50),
-                              FlSpot(35, 10),
-                              FlSpot(45, 20),
-                              FlSpot(60, 35),
-                              FlSpot(75, 0),
+                              FlSpot(1, 20),
+                              FlSpot(2, 50),
+                              FlSpot(3, 10),
+                              FlSpot(4, 20),
+                              FlSpot(5, 35),
+                              FlSpot(6, 0),
                             ],
                             color: Color(ColorConstraints.buttonColor),
                             belowBarData: BarAreaData(
