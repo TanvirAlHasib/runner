@@ -29,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
               height: 10,
             ),
             Container(
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+              padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
               decoration: BoxDecoration(
                 color: Color(ColorConstraints.backGroundColor),
                 borderRadius: BorderRadius.circular(10)
@@ -145,7 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   // line chart
                   const SizedBox(
-                    height: 15,
+                    height: 30,
                   ),
                   SizedBox(
                     height: 300,
