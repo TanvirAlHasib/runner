@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:runner/screens/map_screen.dart';
 
 import '../constraints/color_constraints.dart';
 
@@ -135,7 +136,9 @@ class RunScreen extends StatelessWidget {
               ),
               Spacer(),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => MapScreen(),));
+                },
                 style: ElevatedButton.styleFrom(
                   minimumSize: Size.fromHeight(58),
                   backgroundColor: Color(ColorConstraints.buttonColor),
