@@ -6,4 +6,5 @@ class ColorConstraints {
   static final int bodyFontColor = 0XFFC3CAAC;
   static final int headLineFontColor = 0XFFE5E2E3;
   static final int cardColor = 0XFF3A4D00;
+  static final int buttonFontColor = 0XFF151F00;
 }
