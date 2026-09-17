@@ -8,7 +8,9 @@ import '../constraints/color_constraints.dart';
 
 class RunScreen extends StatelessWidget {
   RunScreen({super.key});
-  final Completer<GoogleMapController> _controller = Completer<GoogleMapController>();
+  bool flagRun = true;
+  bool flagDistance = false;
+  bool flagTime = false;
 
   @override
   Widget build(BuildContext context) {
@@ -65,13 +67,64 @@ class RunScreen extends StatelessWidget {
               ),
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                child: Row(
-                  spacing: 8,
-                  children: [
-                    runGoals("lib/assets/icons/run.svg", "Free Run", context),
-                    runGoals("lib/assets/icons/route.svg", "Distance", context),
-                    runGoals("lib/assets/icons/timer.svg", "Free Run", context),
-                  ],
+                child: StatefulBuilder(
+                  builder: (
+                    BuildContext context,
+                    void Function(void Function()) setState) {
+                      return Row(
+                        spacing: 8,
+                        children: [
+                          InkWell(
+                            onTap:() {
+                              setState((){
+                                flagRun = true;
+                                flagDistance = false;
+                                flagTime = false;
+                              });
+                            },
+                            child: runGoals(
+                              "lib/assets/icons/run.svg",
+                              "Free Run", context,
+                              flagRun ? Color(ColorConstraints.backGroundColor) : Colors.grey.shade900, // for backGround
+                              flagRun ? Color(ColorConstraints.buttonColor) : Colors.grey.shade400, // for icon
+                              flagRun ? Color(ColorConstraints.buttonColor) : Color(ColorConstraints.headLineFontColor), // for font color
+                            )
+                          ),
+                          InkWell(
+                            onTap:() {
+                              setState((){
+                                flagRun = false;
+                                flagDistance = true;
+                                flagTime = false;
+                              });
+                            },
+                            child: runGoals(
+                              "lib/assets/icons/route.svg",
+                              "Distance", context,
+                              flagDistance ? Color(ColorConstraints.backGroundColor) : Colors.grey.shade900,
+                              flagDistance ? Color(ColorConstraints.buttonColor) : Colors.grey.shade400,
+                              flagDistance ? Color(ColorConstraints.buttonColor) : Color(ColorConstraints.headLineFontColor),
+                            )
+                          ),
+                          InkWell(
+                            onTap:() {
+                              setState((){
+                                flagRun = false;
+                                flagDistance = false;
+                                flagTime = true;
+                              });
+                            },
+                            child: runGoals(
+                              "lib/assets/icons/timer.svg",
+                              "Time", context,
+                              flagTime ? Color(ColorConstraints.backGroundColor) : Colors.grey.shade900,
+                              flagTime ? Color(ColorConstraints.buttonColor) : Colors.grey.shade400,
+                              flagTime ? Color(ColorConstraints.buttonColor) : Color(ColorConstraints.headLineFontColor),
+                            )
+                          ),
+                        ],
+                      );
+                  },
                 ),
               ),
             ],
@@ -102,11 +155,11 @@ class RunScreen extends StatelessWidget {
   }
 
   // run goals
-  Widget runGoals(String iconLocation, String title, BuildContext context){
+  Widget runGoals(String iconLocation, String title, BuildContext context, Color backGroundColor, Color forGroundColor, Color fontColor){
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 15),
       decoration: BoxDecoration(
-        color: Colors.grey.shade900,
+        color: backGroundColor,
         borderRadius: BorderRadius.circular(10),
       ),
       child: Column(
@@ -115,10 +168,10 @@ class RunScreen extends StatelessWidget {
           SvgPicture.asset(
             iconLocation,
             height: 30,
-            colorFilter: ColorFilter.mode(Colors.grey.shade400, BlendMode.srcIn),
+            colorFilter: ColorFilter.mode(forGroundColor, BlendMode.srcIn),
           ),
           Text(title, style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-              color: Color(ColorConstraints.headLineFontColor),
+              color: fontColor,
               fontWeight: FontWeight.w800
           ),)
         ],
