@@ -30,6 +30,20 @@ class RunScreen extends StatelessWidget {
                       target: LatLng(37.42796133580664, -122.085749655962),
                       zoom: 14.4746,
                     ),
+                  ),
+                  Card(
+                    color: Colors.transparent,
+                    child: Row(
+                      mainAxisSize: .min,
+                      spacing: 3,
+                      children: [
+                        Icon(Icons.fiber_manual_record, color: Color(ColorConstraints.buttonColor), size: 16,),
+                        Text("On Track", style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600
+                        ),)
+                      ],
+                    ),
                   )
                 ],
               ),
