@@ -1,9 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../constraints/color_constraints.dart';
 
 class RunScreen extends StatelessWidget {
-  const RunScreen({super.key});
+  RunScreen({super.key});
+  final Completer<GoogleMapController> _controller = Completer<GoogleMapController>();
 
   @override
   Widget build(BuildContext context) {
@@ -11,7 +15,27 @@ class RunScreen extends StatelessWidget {
       backgroundColor: Colors.black,
       appBar: myAppBar(context),
       body: Container(
-
+        padding: const EdgeInsets.only(top: 13, left: 12, right: 12, bottom: 5),
+        child: Column(
+          children: [
+            Expanded(
+              child: Stack(
+                alignment: AlignmentGeometry.topLeft,
+                children: [
+                  GoogleMap(
+                    mapType: MapType.hybrid,
+                    zoomControlsEnabled: true,
+                    zoomGesturesEnabled: true,
+                    initialCameraPosition: CameraPosition(
+                      target: LatLng(37.42796133580664, -122.085749655962),
+                      zoom: 14.4746,
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
