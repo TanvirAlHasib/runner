@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../constraints/color_constraints.dart';
+import 'map_screen.dart';
 
 class SelectLocationScreen extends StatefulWidget {
   const SelectLocationScreen({super.key});
@@ -9,13 +10,92 @@ class SelectLocationScreen extends StatefulWidget {
 }
 
 class _SelectLocationScreenState extends State<SelectLocationScreen> {
+
+  final TextEditingController fromLocation = TextEditingController();
+  final TextEditingController toLocation = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: myAppBar(context),
       backgroundColor: Colors.black,
-      body: Container(
-        padding: const EdgeInsets.only(top: 13, left: 12, right: 12, bottom: 5),
+      body: SafeArea(
+        child: Container(
+          padding: const EdgeInsets.only(top: 13, left: 12, right: 12, bottom: 5),
+          child: Column(
+            crossAxisAlignment: .start,
+            children: [
+              Text("Select Locations", style: Theme.of(context).textTheme.headlineSmall!.copyWith(
+                color: Color(ColorConstraints.headLineFontColor)
+              ),),
+              const SizedBox(
+                height: 20,
+              ),
+
+              TextFormField(
+                cursorColor: Color(ColorConstraints.buttonColor),
+                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                  color: Color(ColorConstraints.bodyFontColor)
+                ),
+                controller: fromLocation,
+                onTapOutside: (event) {
+                  FocusManager.instance.primaryFocus?.unfocus();
+                },
+                decoration: InputDecoration(
+                  suffixIcon: IconButton(onPressed: () {
+                    // user current location will be fetched here
+                  }, icon: Icon(Icons.my_location)),
+                  suffixIconColor: Color(ColorConstraints.buttonColor),
+                  hintText: "From...",
+                ),
+              ),
+
+              const SizedBox(
+                height: 25,
+              ),
+              SizedBox(
+                width: double.infinity,
+                child: Center(
+                  child: Icon(Icons.arrow_downward, color: Color(ColorConstraints.buttonColor),),
+                ),
+              ),
+              const SizedBox(
+                height: 25,
+              ),
+
+              TextFormField(
+                cursorColor: Color(ColorConstraints.buttonColor),
+                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                    color: Color(ColorConstraints.bodyFontColor)
+                ),
+                controller: toLocation,
+                onTapOutside: (event) {
+                  FocusManager.instance.primaryFocus?.unfocus();
+                },
+                decoration: InputDecoration(
+                  hintText: "To...",
+                  suffixIcon: Icon(Icons.location_on_rounded, color: Color(ColorConstraints.bodyFontColor),)
+                ),
+              ),
+
+              Spacer(),
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => MapScreen(),));
+                  },
+                  style: ElevatedButton.styleFrom(
+                      minimumSize: Size.fromHeight(58),
+                      backgroundColor: Color(ColorConstraints.buttonColor),
+                      foregroundColor: Color(ColorConstraints.buttonFontColor),
+                      textStyle: Theme.of(context).textTheme.headlineSmall!.copyWith(
+                          fontWeight: FontWeight.w800
+                      )
+                  ),
+                  child: Text("Start Run")
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
