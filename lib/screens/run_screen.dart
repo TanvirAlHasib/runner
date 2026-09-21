@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:runner/screens/map_screen.dart';
+import 'package:runner/screens/select_location_screen.dart';
 import 'package:runner/utils/get_location.dart';
 import '../constraints/color_constraints.dart';
 
@@ -128,6 +129,7 @@ class _RunScreenState extends State<RunScreen> {
                                       flagDistance = true;
                                       flagTime = false;
                                     });
+                                    flagDistance ? Navigator.push(context, MaterialPageRoute(builder: (context) => SelectLocationScreen(),)): null;
                                   },
                                   child: runGoals(
                                     "lib/assets/icons/route.svg",
