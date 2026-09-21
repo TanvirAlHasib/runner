@@ -99,84 +99,81 @@ class _RunScreenState extends State<RunScreen> {
                     ),
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
-                      child: StatefulBuilder(
-                        builder: (
-                            BuildContext context,
-                            void Function(void Function()) setState) {
-                          return Row(
-                            spacing: 8,
-                            children: [
-                              InkWell(
-                                  onTap:() {
-                                    setState((){
-                                      flagRun = true;
-                                      flagDistance = false;
-                                      flagTime = false;
-                                    });
-                                  },
-                                  child: runGoals(
-                                    "lib/assets/icons/run.svg",
-                                    "Free Run", context,
-                                    flagRun ? Color(ColorConstraints.backGroundColor) : Colors.grey.shade900, // for backGround
-                                    flagRun ? Color(ColorConstraints.buttonColor) : Colors.grey.shade400, // for icon
-                                    flagRun ? Color(ColorConstraints.buttonColor) : Color(ColorConstraints.headLineFontColor), // for font color
-                                  )
-                              ),
-                              InkWell(
-                                  onTap:() {
-                                    setState((){
-                                      flagRun = false;
-                                      flagDistance = true;
-                                      flagTime = false;
-                                    });
-                                    flagDistance ? Navigator.push(context, MaterialPageRoute(builder: (context) => SelectLocationScreen(),)): null;
-                                  },
-                                  child: runGoals(
-                                    "lib/assets/icons/route.svg",
-                                    "Distance", context,
-                                    flagDistance ? Color(ColorConstraints.backGroundColor) : Colors.grey.shade900,
-                                    flagDistance ? Color(ColorConstraints.buttonColor) : Colors.grey.shade400,
-                                    flagDistance ? Color(ColorConstraints.buttonColor) : Color(ColorConstraints.headLineFontColor),
-                                  )
-                              ),
-                              InkWell(
-                                  onTap:() {
-                                    setState((){
-                                      flagRun = false;
-                                      flagDistance = false;
-                                      flagTime = true;
-                                    });
-                                  },
-                                  child: runGoals(
-                                    "lib/assets/icons/timer.svg",
-                                    "Time", context,
-                                    flagTime ? Color(ColorConstraints.backGroundColor) : Colors.grey.shade900,
-                                    flagTime ? Color(ColorConstraints.buttonColor) : Colors.grey.shade400,
-                                    flagTime ? Color(ColorConstraints.buttonColor) : Color(ColorConstraints.headLineFontColor),
-                                  )
-                              ),
-                            ],
-                          );
-                        },
+                      child: Row(
+                        spacing: 8,
+                        children: [
+                          InkWell(
+                              onTap:() {
+                                setState((){
+                                  flagRun = true;
+                                  flagDistance = false;
+                                  flagTime = false;
+                                });
+                              },
+                              child: runGoals(
+                                "lib/assets/icons/run.svg",
+                                "Free Run", context,
+                                flagRun ? Color(ColorConstraints.backGroundColor) : Colors.grey.shade900, // for backGround
+                                flagRun ? Color(ColorConstraints.buttonColor) : Colors.grey.shade400, // for icon
+                                flagRun ? Color(ColorConstraints.buttonColor) : Color(ColorConstraints.headLineFontColor), // for font color
+                              )
+                          ),
+                          InkWell(
+                              onTap:() {
+                                setState((){
+                                  flagRun = false;
+                                  flagDistance = true;
+                                  flagTime = false;
+                                });
+                                flagDistance ? Navigator.push(context, MaterialPageRoute(builder: (context) => SelectLocationScreen(),)): null;
+                              },
+                              child: runGoals(
+                                "lib/assets/icons/route.svg",
+                                "Distance", context,
+                                flagDistance ? Color(ColorConstraints.backGroundColor) : Colors.grey.shade900,
+                                flagDistance ? Color(ColorConstraints.buttonColor) : Colors.grey.shade400,
+                                flagDistance ? Color(ColorConstraints.buttonColor) : Color(ColorConstraints.headLineFontColor),
+                              )
+                          ),
+                          InkWell(
+                              onTap:() {
+                                setState((){
+                                  flagRun = false;
+                                  flagDistance = false;
+                                  flagTime = true;
+                                });
+                              },
+                              child: runGoals(
+                                "lib/assets/icons/timer.svg",
+                                "Time", context,
+                                flagTime ? Color(ColorConstraints.backGroundColor) : Colors.grey.shade900,
+                                flagTime ? Color(ColorConstraints.buttonColor) : Colors.grey.shade400,
+                                flagTime ? Color(ColorConstraints.buttonColor) : Color(ColorConstraints.headLineFontColor),
+                              )
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
               ),
               Spacer(),
-              ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => MapScreen(),));
-                  },
-                  style: ElevatedButton.styleFrom(
-                      minimumSize: Size.fromHeight(58),
-                      backgroundColor: Color(ColorConstraints.buttonColor),
-                      foregroundColor: Color(ColorConstraints.buttonFontColor),
-                      textStyle: Theme.of(context).textTheme.headlineSmall!.copyWith(
-                          fontWeight: FontWeight.w800
-                      )
-                  ),
-                  child: Text("Start Run")
+              Visibility(
+                visible: flagRun,
+                child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => MapScreen(),));
+                    },
+                    style: ElevatedButton.styleFrom(
+                        minimumSize: Size.fromHeight(58),
+                        backgroundColor: Color(ColorConstraints.buttonColor),
+                        foregroundColor: Color(ColorConstraints.buttonFontColor),
+                        textStyle: Theme.of(context).textTheme.headlineSmall!.copyWith(
+                            fontWeight: FontWeight.w800
+                        )
+                    ),
+                    child: Text("Start Run")
+                ),
               ),
             ],
           ),
