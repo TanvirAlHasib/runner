@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:runner/screens/map_screen.dart';
+import 'package:runner/utils/get_location.dart';
 import '../constraints/color_constraints.dart';
 
 class RunScreen extends StatefulWidget {
-  const RunScreen({super.key});
+  RunScreen({super.key});
+  double? lat;
+  double? lang;
 
   @override
   State<RunScreen> createState() => _RunScreenState();
@@ -15,6 +19,19 @@ class _RunScreenState extends State<RunScreen> {
   bool flagRun = true;
   bool flagDistance = false;
   bool flagTime = false;
+
+  // getting the current location  of the user
+  @override
+  void initState() {
+    getPosition();
+    super.initState();
+  }
+
+  Future<void> getPosition() async{
+    Position position = await determinePosition();
+    widget.lat =  position.latitude;
+    widget.lang = position.longitude;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,9 +57,16 @@ class _RunScreenState extends State<RunScreen> {
                             child: GoogleMap(
                               mapType: MapType.hybrid,
                               initialCameraPosition: CameraPosition(
-                                target: LatLng(37.42796133580664, -122.085749655962),
-                                zoom: 14.4746,
+                                target: LatLng(widget.lat ?? 37.42796133580664, widget.lang ?? -122.085749655962),
+                                zoom: 18,
                               ),
+                              markers: {
+                                Marker(
+                                  markerId: MarkerId("user_location"),
+                                  icon: BitmapDescriptor.defaultMarker,
+                                  position: LatLng(widget.lat ?? 37.42796133580664, widget.lang ?? -122.085749655962)
+                                )
+                              },
                             ),
                           ),
                           Card(
