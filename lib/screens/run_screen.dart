@@ -1,14 +1,17 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:runner/screens/map_screen.dart';
-
 import '../constraints/color_constraints.dart';
 
-class RunScreen extends StatelessWidget {
-  RunScreen({super.key});
+class RunScreen extends StatefulWidget {
+  const RunScreen({super.key});
+
+  @override
+  State<RunScreen> createState() => _RunScreenState();
+}
+
+class _RunScreenState extends State<RunScreen> {
   bool flagRun = true;
   bool flagDistance = false;
   bool flagTime = false;
@@ -73,12 +76,12 @@ class RunScreen extends StatelessWidget {
                       scrollDirection: Axis.horizontal,
                       child: StatefulBuilder(
                         builder: (
-                          BuildContext context,
-                          void Function(void Function()) setState) {
-                            return Row(
-                              spacing: 8,
-                              children: [
-                                InkWell(
+                            BuildContext context,
+                            void Function(void Function()) setState) {
+                          return Row(
+                            spacing: 8,
+                            children: [
+                              InkWell(
                                   onTap:() {
                                     setState((){
                                       flagRun = true;
@@ -93,8 +96,8 @@ class RunScreen extends StatelessWidget {
                                     flagRun ? Color(ColorConstraints.buttonColor) : Colors.grey.shade400, // for icon
                                     flagRun ? Color(ColorConstraints.buttonColor) : Color(ColorConstraints.headLineFontColor), // for font color
                                   )
-                                ),
-                                InkWell(
+                              ),
+                              InkWell(
                                   onTap:() {
                                     setState((){
                                       flagRun = false;
@@ -109,8 +112,8 @@ class RunScreen extends StatelessWidget {
                                     flagDistance ? Color(ColorConstraints.buttonColor) : Colors.grey.shade400,
                                     flagDistance ? Color(ColorConstraints.buttonColor) : Color(ColorConstraints.headLineFontColor),
                                   )
-                                ),
-                                InkWell(
+                              ),
+                              InkWell(
                                   onTap:() {
                                     setState((){
                                       flagRun = false;
@@ -125,9 +128,9 @@ class RunScreen extends StatelessWidget {
                                     flagTime ? Color(ColorConstraints.buttonColor) : Colors.grey.shade400,
                                     flagTime ? Color(ColorConstraints.buttonColor) : Color(ColorConstraints.headLineFontColor),
                                   )
-                                ),
-                              ],
-                            );
+                              ),
+                            ],
+                          );
                         },
                       ),
                     ),
@@ -136,18 +139,18 @@ class RunScreen extends StatelessWidget {
               ),
               Spacer(),
               ElevatedButton(
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => MapScreen(),));
-                },
-                style: ElevatedButton.styleFrom(
-                  minimumSize: Size.fromHeight(58),
-                  backgroundColor: Color(ColorConstraints.buttonColor),
-                  foregroundColor: Color(ColorConstraints.buttonFontColor),
-                  textStyle: Theme.of(context).textTheme.headlineSmall!.copyWith(
-                    fontWeight: FontWeight.w800
-                  )
-                ),
-                child: Text("Start Run")
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => MapScreen(),));
+                  },
+                  style: ElevatedButton.styleFrom(
+                      minimumSize: Size.fromHeight(58),
+                      backgroundColor: Color(ColorConstraints.buttonColor),
+                      foregroundColor: Color(ColorConstraints.buttonFontColor),
+                      textStyle: Theme.of(context).textTheme.headlineSmall!.copyWith(
+                          fontWeight: FontWeight.w800
+                      )
+                  ),
+                  child: Text("Start Run")
               ),
             ],
           ),
@@ -205,3 +208,4 @@ class RunScreen extends StatelessWidget {
     );
   }
 }
+
