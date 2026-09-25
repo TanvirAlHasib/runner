@@ -17,6 +17,7 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
 
   final TextEditingController fromLocation = TextEditingController();
   final TextEditingController toLocation = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
   List<PlacePrediction> predictedPlaces = [];
 
   @override
@@ -27,104 +28,121 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
       body: SafeArea(
         child: Container(
           padding: const EdgeInsets.only(top: 13, left: 12, right: 12, bottom: 5),
-          child: Column(
-            crossAxisAlignment: .start,
-            children: [
-              Text("Select Locations", style: Theme.of(context).textTheme.headlineSmall!.copyWith(
-                color: Color(ColorConstraints.headLineFontColor)
-              ),),
-              const SizedBox(
-                height: 20,
-              ),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: .start,
+              children: [
+                Text("Select Locations", style: Theme.of(context).textTheme.headlineSmall!.copyWith(
+                  color: Color(ColorConstraints.headLineFontColor)
+                ),),
+                const SizedBox(
+                  height: 20,
+                ),
 
-              TextFormField(
-                onChanged: (value) async {
-                  if (value.isEmpty) {
-                    setState(() {
-                      predictedPlaces.clear();
-                    });
-                    return;
-                  }
-
-                  Response response = await AutoCompleteLocationService.getAddress(value);
-
-                  if (response.statusCode == 200 || response.statusCode == 201) {
-                    final responseMap = jsonDecode(response.body);
-
-                    final autoCompleteLocation = AutoCompleteLocationModel.fromJson(responseMap);
-
-                    predictedPlaces.clear();
-
-                    for (final suggestion in autoCompleteLocation.suggestions ?? []) {
-                      if (suggestion.placePrediction != null) {
-                        predictedPlaces.add(suggestion.placePrediction!);
-                      }
+                TextFormField(
+                  onChanged: (value) async {
+                    if (value.isEmpty) {
+                      setState(() {
+                        predictedPlaces.clear();
+                      });
+                      return;
                     }
 
-                    setState(() {});
-                  }
-                },
-                cursorColor: Color(ColorConstraints.buttonColor),
-                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                  color: Color(ColorConstraints.bodyFontColor)
-                ),
-                controller: fromLocation,
-                onTapOutside: (event) {
-                  FocusManager.instance.primaryFocus?.unfocus();
-                },
-                decoration: InputDecoration(
-                  suffixIcon: IconButton(onPressed: () {
-                    // user current location will be fetched here
-                  }, icon: Icon(Icons.my_location)),
-                  suffixIconColor: Color(ColorConstraints.buttonColor),
-                  hintText: "From...",
-                ),
-              ),
+                    Response response = await AutoCompleteLocationService.getAddress(value);
 
-              const SizedBox(
-                height: 25,
-              ),
-              SizedBox(
-                width: double.infinity,
-                child: Center(
-                  child: Icon(Icons.arrow_downward, color: Color(ColorConstraints.buttonColor),),
-                ),
-              ),
-              const SizedBox(
-                height: 25,
-              ),
+                    if (response.statusCode == 200 || response.statusCode == 201) {
+                      final responseMap = jsonDecode(response.body);
 
-              TextFormField(
-                cursorColor: Color(ColorConstraints.buttonColor),
-                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                    color: Color(ColorConstraints.bodyFontColor)
-                ),
-                controller: toLocation,
-                onTapOutside: (event) {
-                  FocusManager.instance.primaryFocus?.unfocus();
-                },
-                decoration: InputDecoration(
-                  hintText: "To...",
-                  suffixIcon: Icon(Icons.location_on_rounded, color: Color(ColorConstraints.bodyFontColor),)
-                ),
-              ),
+                      final autoCompleteLocation = AutoCompleteLocationModel.fromJson(responseMap);
 
-              Spacer(),
-              ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => MapScreen(),));
+                      predictedPlaces.clear();
+
+                      for (final suggestion in autoCompleteLocation.suggestions ?? []) {
+                        if (suggestion.placePrediction != null) {
+                          predictedPlaces.add(suggestion.placePrediction!);
+                        }
+                      }
+
+                      setState(() {});
+                    }
                   },
-                  style: ElevatedButton.styleFrom(
-                      minimumSize: Size.fromHeight(58),
-                      backgroundColor: Color(ColorConstraints.buttonColor),
-                      foregroundColor: Color(ColorConstraints.buttonFontColor),
-                      textStyle: Theme.of(context).textTheme.headlineSmall!.copyWith(
-                          fontWeight: FontWeight.w800
-                      )
+                  cursorColor: Color(ColorConstraints.buttonColor),
+                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                    color: Color(ColorConstraints.bodyFontColor)
                   ),
-                  child: Text("Start Run")
-              ),
-            ],
+                  controller: fromLocation,
+                  onTapOutside: (event) {
+                    FocusManager.instance.primaryFocus?.unfocus();
+                  },
+                  decoration: InputDecoration(
+                    suffixIcon: IconButton(onPressed: () {
+                      // user current location will be fetched here
+                    }, icon: Icon(Icons.my_location)),
+                    suffixIconColor: Color(ColorConstraints.buttonColor),
+                    hintText: "From...",
+                  ),
+                  validator: (value) {
+                    if(value == null || value.isEmpty){
+                      return "Can not be empty";
+                    }
+                    return null;
+                  },
+                ),
+
+                const SizedBox(
+                  height: 25,
+                ),
+                SizedBox(
+                  width: double.infinity,
+                  child: Center(
+                    child: Icon(Icons.arrow_downward, color: Color(ColorConstraints.buttonColor),),
+                  ),
+                ),
+                const SizedBox(
+                  height: 25,
+                ),
+
+                TextFormField(
+                  cursorColor: Color(ColorConstraints.buttonColor),
+                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                      color: Color(ColorConstraints.bodyFontColor)
+                  ),
+                  controller: toLocation,
+                  onTapOutside: (event) {
+                    FocusManager.instance.primaryFocus?.unfocus();
+                  },
+                  decoration: InputDecoration(
+                    hintText: "To...",
+                    suffixIcon: Icon(Icons.location_on_rounded, color: Color(ColorConstraints.bodyFontColor),)
+                  ),
+                  validator: (value) {
+                    if(value == null || value.isEmpty){
+                      return "Can not be empty";
+                    }
+                    return null;
+                  },
+                ),
+
+                Spacer(),
+                ElevatedButton(
+                    onPressed: () {
+                      if(_formKey.currentState!.validate()){
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => MapScreen(),));
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                        minimumSize: Size.fromHeight(58),
+                        backgroundColor: Color(ColorConstraints.buttonColor),
+                        foregroundColor: Color(ColorConstraints.buttonFontColor),
+                        textStyle: Theme.of(context).textTheme.headlineSmall!.copyWith(
+                            fontWeight: FontWeight.w800
+                        )
+                    ),
+                    child: Text("Start Run")
+                ),
+              ],
+            ),
           ),
         ),
       ),
