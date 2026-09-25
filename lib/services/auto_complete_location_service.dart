@@ -5,10 +5,8 @@ import 'package:runner/constraints/credentials.dart';
 import 'package:runner/constraints/urls.dart';
 
 class AutoCompleteLocationService {
-  AutoCompleteLocationService({required this.address});
-  final String address;
 
-  Future<Response> getAddress() async{
+  static Future<Response> getAddress(String address) async{
     Response response = await http.post(Uri.parse(Urls.autoCompleteLocationUrl), headers: {
       'Content-Type': 'application/json',
       'X-Goog-Api-Key': Credentials.apiKey,
