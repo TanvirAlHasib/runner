@@ -1,4 +1,8 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:runner/models/AutoCompleteLocationModel.dart' hide Text;
+import 'package:runner/services/auto_complete_location_service.dart';
 import '../constraints/color_constraints.dart';
 import 'map_screen.dart';
 
@@ -13,6 +17,7 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
 
   final TextEditingController fromLocation = TextEditingController();
   final TextEditingController toLocation = TextEditingController();
+  List<PlacePrediction> predictedPlaces = [];
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +38,16 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
               ),
 
               TextFormField(
+                onChanged: (value) async {
+                  Response response = await AutoCompleteLocationService.getAddress(value);
+                  if(response.statusCode == 200 || response.statusCode == 201){
+                    final responseMap = jsonDecode(response.body);
+                    for(Map<String, dynamic> singlePrediction in responseMap){
+                      predictedPlaces.add(PlacePrediction.fromJson(singlePrediction));
+                    }
+                  }
+                  setState(() {});
+                },
                 cursorColor: Color(ColorConstraints.buttonColor),
                 style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                   color: Color(ColorConstraints.bodyFontColor)
