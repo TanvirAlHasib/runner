@@ -1,5 +1,8 @@
+import 'dart:ffi' hide Size;
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:runner/utils/get_location.dart';
 import '../constraints/color_constraints.dart';
 
 class MapScreen extends StatefulWidget {
@@ -13,8 +16,35 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
+  double? userLat;
+  double? userLng;
+
+  @override
+  void initState() {
+    getUserPositions();
+    super.initState();
+  }
+
+  //getting the user location
+  Future<void> getUserPositions() async{
+    Position position = await determinePosition();
+    setState(() {
+      userLat = position.latitude;
+      userLng = position.longitude;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    //if the lat and lng is null
+    if (userLat == null || userLng == null) {
+      return const Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
@@ -23,20 +53,14 @@ class _MapScreenState extends State<MapScreen> {
           GoogleMap(
             mapType: MapType.hybrid,
             initialCameraPosition: CameraPosition(
-              target:widget.fromLatLng ?? LatLng(37.42796133580664, -122.085749655962),
+              target: LatLng(userLat!, userLng!),
               zoom: 18,
             ),
             markers: {
-              //from marker
+              //person marker
               Marker(
-                markerId: MarkerId("from"),
-                position: widget.fromLatLng ?? LatLng(37.42796133580664, -122.085749655962),
-                icon: BitmapDescriptor.defaultMarker,
-              ),
-              //to marker
-              Marker(
-                markerId: MarkerId("to"),
-                position: widget.fromLatLng ?? LatLng(37.42796133580664, -122.085749655962),
+                markerId: MarkerId("person"),
+                position: LatLng(userLat!, userLng!),
                 icon: BitmapDescriptor.defaultMarker,
               ),
             },
