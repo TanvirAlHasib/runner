@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:runner/constraints/mode_enum.dart';
 import 'package:runner/screens/map_screen.dart';
 import 'package:runner/screens/select_location_screen.dart';
 import 'package:runner/utils/get_location.dart';
@@ -162,7 +163,7 @@ class _RunScreenState extends State<RunScreen> {
                 visible: flagRun,
                 child: ElevatedButton(
                     onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => MapScreen(),));
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => MapScreen(mode: ModeEnum.freeRun,),));
                     },
                     style: ElevatedButton.styleFrom(
                         minimumSize: Size.fromHeight(58),

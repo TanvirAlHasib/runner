@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:runner/constraints/mode_enum.dart';
 import 'package:runner/models/AutoCompleteLocationModel.dart' hide Text;
 import 'package:runner/services/auto_complete_location_service.dart';
 import '../constraints/color_constraints.dart';
@@ -181,7 +182,7 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
                 ElevatedButton(
                     onPressed: () {
                       if(_formKey.currentState!.validate()){
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => MapScreen(),));
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => MapScreen(mode: ModeEnum.distanceRun,),));
                       }
                     },
                     style: ElevatedButton.styleFrom(

@@ -3,9 +3,10 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../constraints/color_constraints.dart';
 
 class MapScreen extends StatefulWidget {
-  const MapScreen({super.key, this.fromLatLng, this.toLatLng});
+  const MapScreen({super.key, this.fromLatLng, this.toLatLng, required this.mode});
   final LatLng? fromLatLng;
   final LatLng? toLatLng;
+  final String mode;
 
   @override
   State<MapScreen> createState() => _MapScreenState();
