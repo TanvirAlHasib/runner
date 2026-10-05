@@ -105,9 +105,10 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
 
                 TextFormField(
                   onChanged: (value) async {
-                    if(value.isEmpty){
-                      predictedPlaces.clear();
-                      setState(() {});
+                    if (value.isEmpty) {
+                      setState(() {
+                        predictedPlaces.clear();
+                      });
                       return;
                     }
                     
@@ -121,7 +122,7 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
                       }
                       setState(() {});
 
-                      //print(predictedPlaces[0].text?.text);
+                      print(predictedPlaces[0].text?.text);
                     }
                     
                   },
@@ -145,7 +146,27 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
                   },
                 ),
 
-                Spacer(),
+                const SizedBox(
+                  height: 10,
+                ),
+                // here is predicted places list will show
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: predictedPlaces.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        onTap: () {
+                          toLocation.text = "${predictedPlaces[index].text?.text}";
+                        },
+                        leading: Icon(Icons.location_on_sharp, color: Color(ColorConstraints.headLineFontColor),),
+                        title: Text("${predictedPlaces[index].text?.text}", style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                          color: Color(ColorConstraints.headLineFontColor)
+                        ),),
+                      );
+                    },
+                  ),
+                ),
+
                 ElevatedButton(
                     onPressed: () {
                       if(_formKey.currentState!.validate()){
