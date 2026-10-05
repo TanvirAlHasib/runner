@@ -18,6 +18,7 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
   final TextEditingController fromLocation = TextEditingController();
   final TextEditingController toLocation = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  String activeField = "";
   List<PlacePrediction> predictedPlaces = [];
 
   @override
@@ -41,6 +42,7 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
                 ),
 
                 TextFormField(
+                  onTap: () => activeField = "from",
                   onChanged: (value) async {
                     if (value.isEmpty) {
                       setState(() {
@@ -104,6 +106,7 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
                 ),
 
                 TextFormField(
+                  onTap: () => activeField = "to",
                   onChanged: (value) async {
                     if (value.isEmpty) {
                       setState(() {
@@ -156,7 +159,17 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
                     itemBuilder: (context, index) {
                       return ListTile(
                         onTap: () {
-                          toLocation.text = "${predictedPlaces[index].text?.text}";
+                          if(activeField.contains("from")){
+                            fromLocation.text = "${predictedPlaces[index].text?.text}";
+                            setState(() {
+                              predictedPlaces.clear();
+                            });
+                          } else{
+                            toLocation.text = "${predictedPlaces[index].text?.text}";
+                            setState(() {
+                              predictedPlaces.clear();
+                            });
+                          }
                         },
                         leading: Icon(Icons.location_on_sharp, color: Color(ColorConstraints.headLineFontColor),),
                         title: Text("${predictedPlaces[index].text?.text}", style: Theme.of(context).textTheme.bodyLarge!.copyWith(
