@@ -3,7 +3,9 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../constraints/color_constraints.dart';
 
 class MapScreen extends StatefulWidget {
-  const MapScreen({super.key});
+  const MapScreen({super.key, this.fromLatLng, this.toLatLng});
+  final LatLng? fromLatLng;
+  final LatLng? toLatLng;
 
   @override
   State<MapScreen> createState() => _MapScreenState();
@@ -20,9 +22,23 @@ class _MapScreenState extends State<MapScreen> {
           GoogleMap(
             mapType: MapType.hybrid,
             initialCameraPosition: CameraPosition(
-              target: LatLng(37.42796133580664, -122.085749655962),
-              zoom: 14.4746,
+              target:widget.fromLatLng ?? LatLng(37.42796133580664, -122.085749655962),
+              zoom: 18,
             ),
+            markers: {
+              //from marker
+              Marker(
+                markerId: MarkerId("from"),
+                position: widget.fromLatLng ?? LatLng(37.42796133580664, -122.085749655962),
+                icon: BitmapDescriptor.defaultMarker,
+              ),
+              //to marker
+              Marker(
+                markerId: MarkerId("to"),
+                position: widget.fromLatLng ?? LatLng(37.42796133580664, -122.085749655962),
+                icon: BitmapDescriptor.defaultMarker,
+              ),
+            },
           ),
           SizedBox(
             height: 260,
