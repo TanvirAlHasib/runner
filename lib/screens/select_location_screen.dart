@@ -104,6 +104,27 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
                 ),
 
                 TextFormField(
+                  onChanged: (value) async {
+                    if(value.isEmpty){
+                      predictedPlaces.clear();
+                      setState(() {});
+                      return;
+                    }
+                    
+                    Response response = await AutoCompleteLocationService.getAddress(value);
+                    if(response.statusCode == 200 || response.statusCode == 201){
+                      final responseMap = jsonDecode(response.body);
+                      final autoCompleteLocations = AutoCompleteLocationModel.fromJson(responseMap);
+                      predictedPlaces.clear();
+                      for(final suggestions in autoCompleteLocations.suggestions ?? []){
+                        predictedPlaces.add(suggestions.placePrediction);
+                      }
+                      setState(() {});
+
+                      //print(predictedPlaces[0].text?.text);
+                    }
+                    
+                  },
                   cursorColor: Color(ColorConstraints.buttonColor),
                   style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                       color: Color(ColorConstraints.bodyFontColor)
