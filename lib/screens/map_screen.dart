@@ -81,14 +81,20 @@ class _MapScreenState extends State<MapScreen> {
             GoogleMap(
               mapType: MapType.hybrid,
               initialCameraPosition: CameraPosition(
-                target: LatLng(userLat!, userLng!),
+                target: widget.fromLatLng ?? LatLng(userLat!, userLng!),
                 zoom: 18,
               ),
               markers: {
-                //person marker
+                //from marker
                 Marker(
-                  markerId: MarkerId("person"),
-                  position: LatLng(userLat!, userLng!),
+                  markerId: MarkerId("from"),
+                  position: widget.fromLatLng ?? LatLng(userLat!, userLng!),
+                  icon: BitmapDescriptor.defaultMarker,
+                ),
+                // to marker
+                Marker(
+                  markerId: MarkerId("to"),
+                  position: widget.toLatLng ?? LatLng(userLat!, userLng!),
                   icon: BitmapDescriptor.defaultMarker,
                 ),
               },
