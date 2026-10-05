@@ -161,15 +161,13 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
                         onTap: () {
                           if(activeField.contains("from")){
                             fromLocation.text = "${predictedPlaces[index].text?.text}";
-                            setState(() {
-                              predictedPlaces.clear();
-                            });
                           } else{
                             toLocation.text = "${predictedPlaces[index].text?.text}";
-                            setState(() {
-                              predictedPlaces.clear();
-                            });
                           }
+                          // updating the state and predictedPlaces
+                          setState(() {
+                            predictedPlaces.clear();
+                          });
                         },
                         leading: Icon(Icons.location_on_sharp, color: Color(ColorConstraints.headLineFontColor),),
                         title: Text("${predictedPlaces[index].text?.text}", style: Theme.of(context).textTheme.bodyLarge!.copyWith(
