@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart';
 import 'package:runner/constraints/mode_enum.dart';
 import 'package:runner/models/AutoCompleteLocationModel.dart' hide Text;
 import 'package:runner/services/auto_complete_location_service.dart';
+import 'package:runner/services/getLatLngFromPlaceID.dart';
 import '../constraints/color_constraints.dart';
 import 'map_screen.dart';
 
@@ -21,6 +23,8 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
   final _formKey = GlobalKey<FormState>();
   String activeField = "";
   List<PlacePrediction> predictedPlaces = [];
+  LatLng? fromLatLng;
+  LatLng? toLatLng;
 
   @override
   Widget build(BuildContext context) {
@@ -126,7 +130,8 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
                       }
                       setState(() {});
 
-                      print(predictedPlaces[0].text?.text);
+                      // debug print
+                      //print(predictedPlaces[0].text?.text);
                     }
                     
                   },
@@ -159,11 +164,17 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
                     itemCount: predictedPlaces.length,
                     itemBuilder: (context, index) {
                       return ListTile(
-                        onTap: () {
+                        onTap: () async {
                           if(activeField.contains("from")){
                             fromLocation.text = "${predictedPlaces[index].text?.text}";
+                            // here is fetching latLng against placeID for from
+                            fromLatLng = await GetLatLngFromPlaceId.getLatLng(predictedPlaces[index].placeId!);
+                            //print(fromLatLng);
                           } else{
                             toLocation.text = "${predictedPlaces[index].text?.text}";
+                            // here is fetching latLng against placeID for to
+                            toLatLng = await GetLatLngFromPlaceId.getLatLng(predictedPlaces[index].placeId!);
+                            //print(toLatLng);
                           }
                           // updating the state and predictedPlaces
                           setState(() {
@@ -180,20 +191,23 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
                 ),
 
                 ElevatedButton(
-                    onPressed: () {
-                      if(_formKey.currentState!.validate()){
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => MapScreen(mode: ModeEnum.distanceRun,),));
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                        minimumSize: Size.fromHeight(58),
-                        backgroundColor: Color(ColorConstraints.buttonColor),
-                        foregroundColor: Color(ColorConstraints.buttonFontColor),
-                        textStyle: Theme.of(context).textTheme.headlineSmall!.copyWith(
-                            fontWeight: FontWeight.w800
-                        )
-                    ),
-                    child: Text("Start Run")
+                  onPressed: () {
+                    if(_formKey.currentState!.validate()){
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => MapScreen(
+                        mode: ModeEnum.distanceRun, fromLatLng: fromLatLng, toLatLng: toLatLng,),
+                      )
+                      );
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                      minimumSize: Size.fromHeight(58),
+                      backgroundColor: Color(ColorConstraints.buttonColor),
+                      foregroundColor: Color(ColorConstraints.buttonFontColor),
+                      textStyle: Theme.of(context).textTheme.headlineSmall!.copyWith(
+                          fontWeight: FontWeight.w800
+                      )
+                  ),
+                  child: Text("Start Run")
                 ),
               ],
             ),
