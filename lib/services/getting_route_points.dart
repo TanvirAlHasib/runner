@@ -8,24 +8,24 @@ class GettingRoutePoints {
 
   static Future<List<LatLng>> getRoutePoints({required LatLng from, required LatLng to}) async{
 
-    final result = await polylinePoints.getRouteBetweenCoordinates(
-      request: PolylineRequest(
+    final result = await polylinePoints.getRouteBetweenCoordinatesV2(
+      request: RoutesApiRequest(
         origin: PointLatLng(from.latitude, from.longitude),
         destination: PointLatLng(to.latitude, to.longitude),
-        mode: TravelMode.walking
+        travelMode: TravelMode.walking,
+        routingPreference: RoutingPreference.unspecified
       )
     );
 
     routePoints.clear();
-    if(result.points.isEmpty){
+    if(result.routes.first.polylinePoints!.isEmpty){
       return routePoints;
     }
 
-    for(final point in result.points){
+    for(final point in polylinePoints.convertToLegacyResult(result).points){
       routePoints.add(LatLng(point.latitude, point.longitude));
     }
-    //debug print
-    print("route points : $routePoints");
+
     return routePoints;
 
   }
