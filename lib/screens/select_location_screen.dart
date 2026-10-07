@@ -123,6 +123,11 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
                 TextFormField(
                   onTap: () => activeField = "to",
                   onChanged: (value) async {
+
+                    if(_timer?.isActive ?? false){
+                      _timer?.cancel();
+                    }
+
                     if (value.isEmpty) {
                       setState(() {
                         predictedPlaces.clear();
@@ -130,19 +135,21 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
                       return;
                     }
                     
-                    Response response = await AutoCompleteLocationService.getAddress(value);
-                    if(response.statusCode == 200 || response.statusCode == 201){
-                      final responseMap = jsonDecode(response.body);
-                      final autoCompleteLocations = AutoCompleteLocationModel.fromJson(responseMap);
-                      predictedPlaces.clear();
-                      for(final suggestions in autoCompleteLocations.suggestions ?? []){
-                        predictedPlaces.add(suggestions.placePrediction);
-                      }
-                      setState(() {});
+                    _timer = Timer(Duration(milliseconds: 700), () async {
+                      Response response = await AutoCompleteLocationService.getAddress(value);
+                      if(response.statusCode == 200 || response.statusCode == 201){
+                        final responseMap = jsonDecode(response.body);
+                        final autoCompleteLocations = AutoCompleteLocationModel.fromJson(responseMap);
+                        predictedPlaces.clear();
+                        for(final suggestions in autoCompleteLocations.suggestions ?? []){
+                          predictedPlaces.add(suggestions.placePrediction);
+                        }
+                        setState(() {});
 
-                      // debug print
-                      //print(predictedPlaces[0].text?.text);
-                    }
+                        // debug print
+                        //print(predictedPlaces[0].text?.text);
+                      }
+                    },);
                     
                   },
                   cursorColor: Color(ColorConstraints.buttonColor),
