@@ -128,7 +128,7 @@ class _MapScreenState extends State<MapScreen> {
                 Polyline(
                   polylineId: PolylineId("route"),
                   color: Color(ColorConstraints.buttonColor),
-                  width: 3,
+                  width: 7,
                   visible: true,
                   points: routePoints
                 )
