@@ -13,7 +13,7 @@ class GettingRoutePoints {
         origin: PointLatLng(from.latitude, from.longitude),
         destination: PointLatLng(to.latitude, to.longitude),
         travelMode: TravelMode.walking,
-        routingPreference: RoutingPreference.unspecified
+        routingPreference: RoutingPreference.unspecified // it is needed for walking mode
       )
     );
 
