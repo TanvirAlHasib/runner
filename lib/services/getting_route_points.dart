@@ -24,6 +24,8 @@ class GettingRoutePoints {
     for(final point in result.points){
       routePoints.add(LatLng(point.latitude, point.longitude));
     }
+    //debug print
+    print("route points : $routePoints");
     return routePoints;
 
   }

@@ -98,11 +98,15 @@ class _MapScreenState extends State<MapScreen> {
           alignment: AlignmentGeometry.bottomCenter,
           children: [
             // here will be selected location map
-            (routePoints.isEmpty || widget.fromLatLng == null || widget.toLatLng == null) ? Center(
-              child: Text("Getting no data", style: Theme.of(context).textTheme.headlineSmall!.copyWith(
-                color: Color(ColorConstraints.headLineFontColor)
-              ),),
-            ) : isLoading ? CircularProgressIndicator() : GoogleMap(
+            isLoading ? const Center(
+              child: CircularProgressIndicator(),
+            ) : (routePoints.isEmpty ||
+                widget.fromLatLng == null ||
+                widget.toLatLng == null) ? const Center(child: Text(
+                "Getting no data",
+                style: TextStyle(color: Colors.white),
+              ),
+            ): GoogleMap(
               mapType: MapType.hybrid,
               initialCameraPosition: CameraPosition(
                 target: widget.fromLatLng!,

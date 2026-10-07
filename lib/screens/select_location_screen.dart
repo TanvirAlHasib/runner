@@ -179,12 +179,12 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
                             fromLocation.text = "${predictedPlaces[index].text?.text}";
                             // here is fetching latLng against placeID for from
                             fromLatLng = await GetLatLngFromPlaceId.getLatLng(predictedPlaces[index].placeId!);
-                            //print(fromLatLng);
+                            print("from lat lng : $fromLatLng");
                           } else{
                             toLocation.text = "${predictedPlaces[index].text?.text}";
                             // here is fetching latLng against placeID for to
                             toLatLng = await GetLatLngFromPlaceId.getLatLng(predictedPlaces[index].placeId!);
-                            //print(toLatLng);
+                            print("to lat lng: $toLatLng");
                           }
                           // updating the state and predictedPlaces
                           setState(() {
