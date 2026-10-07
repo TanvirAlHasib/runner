@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:runner/constraints/mode_enum.dart';
+import 'package:runner/services/getting_route_points.dart';
 import 'package:runner/utils/get_location.dart';
 import '../constraints/color_constraints.dart';
 
@@ -19,10 +20,19 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   double? userLat;
   double? userLng;
+  List<LatLng> routePoints = [];
+  bool isLoading = false;
 
   @override
   void initState() {
-    getUserPositions();
+
+    if(widget.mode.contains(ModeEnum.freeRun)){
+      getUserPositions();
+    }
+
+    if (widget.mode.contains(ModeEnum.distanceRun)) {
+      getRoutePoints();
+    }
     super.initState();
   }
 
@@ -32,6 +42,16 @@ class _MapScreenState extends State<MapScreen> {
     setState(() {
       userLat = position.latitude;
       userLng = position.longitude;
+    });
+  }
+
+  // calling get route points function
+  Future<void> getRoutePoints() async{
+    isLoading = true;
+    final points = await GettingRoutePoints.getRoutePoints(from: widget.fromLatLng!, to: widget.toLatLng!);
+    isLoading = false;
+    setState(() {
+      routePoints = points;
     });
   }
 
@@ -79,7 +99,11 @@ class _MapScreenState extends State<MapScreen> {
           alignment: AlignmentGeometry.bottomCenter,
           children: [
             // here will be selected location map
-            GoogleMap(
+            (routePoints.isEmpty || widget.fromLatLng == null || widget.toLatLng == null) ? Center(
+              child: Text("Getting no data", style: Theme.of(context).textTheme.headlineSmall!.copyWith(
+                color: Color(ColorConstraints.headLineFontColor)
+              ),),
+            ) : isLoading ? CircularProgressIndicator() : GoogleMap(
               mapType: MapType.hybrid,
               initialCameraPosition: CameraPosition(
                 target: widget.fromLatLng!,
@@ -96,6 +120,15 @@ class _MapScreenState extends State<MapScreen> {
                   position: widget.toLatLng!,
                   icon: BitmapDescriptor.defaultMarker
                 ),
+              },
+              polylines: {
+                Polyline(
+                  polylineId: PolylineId("route"),
+                  color: Color(ColorConstraints.buttonColor),
+                  width: 3,
+                  visible: true,
+                  points: routePoints
+                )
               },
             ),
             // here calling running dashboard
