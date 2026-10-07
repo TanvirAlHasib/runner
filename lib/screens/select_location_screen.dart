@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -25,6 +26,7 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
   List<PlacePrediction> predictedPlaces = [];
   LatLng? fromLatLng;
   LatLng? toLatLng;
+  Timer? _timer;
 
   @override
   Widget build(BuildContext context) {
@@ -49,6 +51,11 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
                 TextFormField(
                   onTap: () => activeField = "from",
                   onChanged: (value) async {
+
+                    if(_timer?.isActive ?? false){
+                      _timer?.cancel();
+                    }
+
                     if (value.isEmpty) {
                       setState(() {
                         predictedPlaces.clear();
@@ -56,23 +63,26 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
                       return;
                     }
 
-                    Response response = await AutoCompleteLocationService.getAddress(value);
+                    _timer = Timer(Duration(milliseconds: 700), () async {
+                      Response response = await AutoCompleteLocationService.getAddress(value);
 
-                    if (response.statusCode == 200 || response.statusCode == 201) {
-                      final responseMap = jsonDecode(response.body);
+                      if (response.statusCode == 200 || response.statusCode == 201) {
+                        final responseMap = jsonDecode(response.body);
 
-                      final autoCompleteLocation = AutoCompleteLocationModel.fromJson(responseMap);
+                        final autoCompleteLocation = AutoCompleteLocationModel.fromJson(responseMap);
 
-                      predictedPlaces.clear();
+                        predictedPlaces.clear();
 
-                      for (final suggestion in autoCompleteLocation.suggestions ?? []) {
-                        if (suggestion.placePrediction != null) {
-                          predictedPlaces.add(suggestion.placePrediction!);
+                        for (final suggestion in autoCompleteLocation.suggestions ?? []) {
+                          if (suggestion.placePrediction != null) {
+                            predictedPlaces.add(suggestion.placePrediction!);
+                          }
                         }
-                      }
 
-                      setState(() {});
-                    }
+                        setState(() {});
+                      }
+                    },);
+
                   },
                   cursorColor: Color(ColorConstraints.buttonColor),
                   style: Theme.of(context).textTheme.bodyLarge!.copyWith(
