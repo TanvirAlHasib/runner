@@ -78,24 +78,23 @@ class _MapScreenState extends State<MapScreen> {
         body: Stack(
           alignment: AlignmentGeometry.bottomCenter,
           children: [
+            // here will be selected location map
             GoogleMap(
               mapType: MapType.hybrid,
               initialCameraPosition: CameraPosition(
-                target: widget.fromLatLng ?? LatLng(userLat!, userLng!),
+                target: widget.fromLatLng!,
                 zoom: 18,
               ),
               markers: {
-                //from marker
                 Marker(
                   markerId: MarkerId("from"),
-                  position: widget.fromLatLng ?? LatLng(userLat!, userLng!),
-                  icon: BitmapDescriptor.defaultMarker,
+                  position: widget.fromLatLng!,
+                  icon: BitmapDescriptor.defaultMarker
                 ),
-                // to marker
                 Marker(
                   markerId: MarkerId("to"),
-                  position: widget.toLatLng ?? LatLng(userLat!, userLng!),
-                  icon: BitmapDescriptor.defaultMarker,
+                  position: widget.toLatLng!,
+                  icon: BitmapDescriptor.defaultMarker
                 ),
               },
             ),
