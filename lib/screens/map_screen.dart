@@ -38,7 +38,9 @@ class _MapScreenState extends State<MapScreen> {
 
   //getting the user location
   Future<void> getUserPositions() async{
+    isLoading = true;
     Position position = await determinePosition();
+    isLoading = false;
     setState(() {
       userLat = position.latitude;
       userLng = position.longitude;
@@ -58,16 +60,13 @@ class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     //if the lat and lng is null
-    if (userLat == null || userLng == null) {
-      return const Scaffold(
+    if(widget.mode.contains(ModeEnum.freeRun)){
+      return isLoading ? const Scaffold(
         backgroundColor: Colors.black,
         body: Center(
           child: CircularProgressIndicator(),
         ),
-      );
-    }
-    if(widget.mode.contains(ModeEnum.freeRun)){
-      return Scaffold(
+      ) : Scaffold(
         backgroundColor: Colors.black,
         body: Stack(
           alignment: AlignmentGeometry.bottomCenter,
