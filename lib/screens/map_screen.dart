@@ -59,7 +59,7 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    //if the lat and lng is null
+    //if user selects free run
     if(widget.mode.contains(ModeEnum.freeRun)){
       return isLoading ? const Scaffold(
         backgroundColor: Colors.black,

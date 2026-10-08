@@ -8,8 +8,10 @@ import 'package:runner/constraints/color_constraints.dart';
 class LocationStream extends ChangeNotifier{
   late Polyline _polyline;
   late LocationSettings locationSettings;
+  late LatLng _currentLocation;
   List<LatLng> points = [];
   Polyline get getPolyline => _polyline;
+  LatLng get currentLocationStream => _currentLocation;
   StreamSubscription<Position>? positionStream;
 
   void getCurrentLocationStream() {
@@ -42,7 +44,8 @@ class LocationStream extends ChangeNotifier{
     positionStream = Geolocator.getPositionStream(locationSettings: locationSettings)
         .listen((Position? position) {
           //adding lat lng
-          points.add(LatLng(position!.latitude, position.longitude));
+          _currentLocation = LatLng(position!.latitude, position.longitude);
+          points.add(LatLng(position.latitude, position.longitude));
           _polyline = Polyline(
             polylineId: PolylineId("current_location"),
             visible: true,
