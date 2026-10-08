@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:runner/screens/location_stream.dart';
+import 'package:runner/services/location_stream.dart';
 import 'package:runner/screens/splash_screen.dart';
 
 void main() {
