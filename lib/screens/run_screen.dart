@@ -31,8 +31,10 @@ class _RunScreenState extends State<RunScreen> {
 
   Future<void> getPosition() async{
     Position position = await determinePosition();
-    widget.lat =  position.latitude;
-    widget.lang = position.longitude;
+    setState(() {
+      widget.lat =  position.latitude;
+      widget.lang = position.longitude;
+    });
   }
 
   @override
