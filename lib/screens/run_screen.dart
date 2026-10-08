@@ -22,13 +22,6 @@ class _RunScreenState extends State<RunScreen> {
   bool flagDistance = false;
   bool flagTime = false;
 
-  // getting the current location  of the user
-  @override
-  void initState() {
-    getPosition();
-    super.initState();
-  }
-
   Future<void> getPosition() async{
     Position position = await determinePosition();
     setState(() {
@@ -39,6 +32,8 @@ class _RunScreenState extends State<RunScreen> {
 
   @override
   Widget build(BuildContext context) {
+    //because I need it in every build
+    getPosition();
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: myAppBar(context),
