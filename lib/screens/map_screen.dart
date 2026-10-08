@@ -40,6 +40,13 @@ class _MapScreenState extends State<MapScreen> {
     super.initState();
   }
 
+  //cancel the stream when leaving this screen
+  @override
+  void dispose() {
+    context.read<LocationStream>().cancelStream();
+    super.dispose();
+  }
+
   //getting the user location
   Future<void> getUserPositions() async{
     isLoading = true;
