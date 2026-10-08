@@ -210,7 +210,7 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
                 ElevatedButton(
                   onPressed: () {
                     if(_formKey.currentState!.validate()){
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => MapScreen(
+                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MapScreen(
                         mode: ModeEnum.distanceRun, fromLatLng: fromLatLng, toLatLng: toLatLng,),
                       )
                       );
