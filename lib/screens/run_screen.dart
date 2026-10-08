@@ -5,7 +5,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:runner/constraints/mode_enum.dart';
 import 'package:runner/screens/map_screen.dart';
 import 'package:runner/screens/select_location_screen.dart';
-import 'package:runner/utils/get_location.dart';
+import 'package:runner/services/get_location.dart';
 import '../constraints/color_constraints.dart';
 
 class RunScreen extends StatefulWidget {
