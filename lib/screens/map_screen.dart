@@ -113,7 +113,29 @@ class _MapScreenState extends State<MapScreen> {
                   },
                 ),
                 // here calling running dashboard
-                RunnigDashboard()
+                RunnigDashboard(),
+                //update the camera to current location
+                Positioned(
+                  bottom: 270,
+                  right: 15,
+                  child: CircleAvatar(
+                    maxRadius: 25,
+                    backgroundColor: Color(ColorConstraints.backGroundColor),
+                    child: IconButton(
+                      onPressed: () {
+                        _controller?.animateCamera(
+                          CameraUpdate.newCameraPosition(
+                            CameraPosition(
+                              target: userLocation,
+                              zoom: 18
+                            )
+                          )
+                        );
+                      },
+                      icon: Icon(Icons.location_searching, color: Color(ColorConstraints.buttonColor), size: 25,),
+                    ),
+                  )
+                )
               ],
             );
           },
