@@ -1,14 +1,14 @@
 import 'dart:async';
+import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:runner/constraints/color_constraints.dart';
 
 class LocationStream extends ChangeNotifier{
-  late Marker _marker;
   late Polyline _polyline;
   late LocationSettings locationSettings;
   List<LatLng> points = [];
-  Marker get getMarker => _marker;
   Polyline get getPolyline => _polyline;
   StreamSubscription<Position>? positionStream;
 
@@ -38,9 +38,18 @@ class LocationStream extends ChangeNotifier{
     }
 
     // supply location settings to getPositionStream
+    points.clear();
     positionStream = Geolocator.getPositionStream(locationSettings: locationSettings)
         .listen((Position? position) {
-
+          //adding lat lng
+          points.add(LatLng(position!.latitude, position.longitude));
+          _polyline = Polyline(
+            polylineId: PolylineId("current_location"),
+            visible: true,
+            color: Color(ColorConstraints.buttonColor),
+            points: points
+          );
+          notifyListeners();
         });
   }
 
@@ -48,6 +57,7 @@ class LocationStream extends ChangeNotifier{
   //then app will stop location streaming
   void cancelStream(){
     positionStream?.cancel();
+    notifyListeners();
   }
 
 }
