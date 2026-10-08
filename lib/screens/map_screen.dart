@@ -65,12 +65,7 @@ class _MapScreenState extends State<MapScreen> {
   Widget build(BuildContext context) {
     //if user selects free run
     if(widget.mode.contains(ModeEnum.freeRun)){
-      return isLoading ? const Scaffold(
-        backgroundColor: Colors.black,
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      ) : Scaffold(
+      return Scaffold(
         backgroundColor: Colors.black,
         body: Consumer<LocationStream>(
           builder: (_, provider, _) {
@@ -100,7 +95,7 @@ class _MapScreenState extends State<MapScreen> {
                   zoomControlsEnabled: true,
                   myLocationButtonEnabled: true,
                   initialCameraPosition: CameraPosition(
-                    target: LatLng(userLat!, userLng!),
+                    target: userLocation!,
                     zoom: 18,
                   ),
                   markers: {
