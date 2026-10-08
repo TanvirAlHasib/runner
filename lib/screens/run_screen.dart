@@ -58,17 +58,18 @@ class _RunScreenState extends State<RunScreen> {
                         children: [
                           ClipRRect(
                             borderRadius: const BorderRadiusGeometry.all(Radius.circular(10)),
-                            child: GoogleMap(
+                            child: (widget.lat == null || widget.lang == null) ? Center(child: CircularProgressIndicator())
+                                : GoogleMap(
                               mapType: MapType.hybrid,
                               initialCameraPosition: CameraPosition(
-                                target: LatLng(widget.lat ?? 37.42796133580664, widget.lang ?? -122.085749655962),
+                                target: LatLng(widget.lat!, widget.lang!),
                                 zoom: 18,
                               ),
                               markers: {
                                 Marker(
                                   markerId: MarkerId("user_location"),
                                   icon: BitmapDescriptor.defaultMarker,
-                                  position: LatLng(widget.lat ?? 37.42796133580664, widget.lang ?? -122.085749655962)
+                                  position: LatLng(widget.lat!, widget.lang!)
                                 )
                               },
                             ),
