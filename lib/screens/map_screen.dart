@@ -2,8 +2,10 @@ import 'dart:ffi' hide Size;
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:runner/constraints/mode_enum.dart';
 import 'package:runner/services/getting_route_points.dart';
+import 'package:runner/services/location_stream.dart';
 import 'package:runner/utils/get_location.dart';
 import '../constraints/color_constraints.dart';
 
@@ -22,12 +24,15 @@ class _MapScreenState extends State<MapScreen> {
   double? userLng;
   List<LatLng> routePoints = [];
   bool isLoading = false;
+  GoogleMapController? _controller;
+  final LocationStream _locationStream = LocationStream();
 
   @override
   void initState() {
 
     if(widget.mode.contains(ModeEnum.freeRun)){
       getUserPositions();
+      _locationStream.getCurrentLocationStream();
     }
 
     if (widget.mode.contains(ModeEnum.distanceRun)) {
@@ -68,27 +73,51 @@ class _MapScreenState extends State<MapScreen> {
         ),
       ) : Scaffold(
         backgroundColor: Colors.black,
-        body: Stack(
-          alignment: AlignmentGeometry.bottomCenter,
-          children: [
-            GoogleMap(
-              mapType: MapType.hybrid,
-              initialCameraPosition: CameraPosition(
-                target: LatLng(userLat!, userLng!),
-                zoom: 18,
-              ),
-              markers: {
-                //person marker
-                Marker(
-                  markerId: MarkerId("person"),
-                  position: LatLng(userLat!, userLng!),
-                  icon: BitmapDescriptor.defaultMarker,
+        body: Consumer<LocationStream>(
+          builder: (_, provider, _) {
+
+            //get the polyline
+            final polyline = provider.getPolyline;
+            final userLocation = provider.currentLocationStream;
+
+            //changing the camera position to the new position of user
+            _controller?.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+              target: userLocation,
+              zoom: 18
+            )));
+
+            return Stack(
+              alignment: AlignmentGeometry.bottomCenter,
+              children: [
+                GoogleMap(
+                  mapType: MapType.hybrid,
+                  zoomGesturesEnabled: true,
+                  zoomControlsEnabled: true,
+                  myLocationButtonEnabled: true,
+                  initialCameraPosition: CameraPosition(
+                    target: LatLng(userLat!, userLng!),
+                    zoom: 18,
+                  ),
+                  markers: {
+                    //initial marker
+                    Marker(
+                      markerId: MarkerId("initial"),
+                      position: LatLng(userLat!, userLng!),
+                      icon: BitmapDescriptor.defaultMarker,
+                    ),
+                  },
+                  polylines: {
+                    polyline
+                  },
+                  onMapCreated: (controller) {
+                    _controller = controller;
+                  },
                 ),
-              },
-            ),
-            // here calling running dashboard
-            RunnigDashboard()
-          ],
+                // here calling running dashboard
+                RunnigDashboard()
+              ],
+            );
+          },
         ),
       );
     } else if(widget.mode.contains(ModeEnum.distanceRun)){
