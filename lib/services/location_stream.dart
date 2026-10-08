@@ -6,12 +6,12 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:runner/constraints/color_constraints.dart';
 
 class LocationStream extends ChangeNotifier{
-  late Polyline _polyline;
+  Polyline? _polyline;
   late LocationSettings locationSettings;
-  late LatLng _currentLocation;
+  LatLng? _currentLocation;
   List<LatLng> points = [];
-  Polyline get getPolyline => _polyline;
-  LatLng get currentLocationStream => _currentLocation;
+  Polyline? get getPolyline => _polyline;
+  LatLng? get currentLocationStream => _currentLocation;
   StreamSubscription<Position>? positionStream;
 
   void getCurrentLocationStream() {

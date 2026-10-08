@@ -25,14 +25,13 @@ class _MapScreenState extends State<MapScreen> {
   List<LatLng> routePoints = [];
   bool isLoading = false;
   GoogleMapController? _controller;
-  final LocationStream _locationStream = LocationStream();
 
   @override
   void initState() {
 
     if(widget.mode.contains(ModeEnum.freeRun)){
       getUserPositions();
-      _locationStream.getCurrentLocationStream();
+      context.read<LocationStream>().getCurrentLocationStream();
     }
 
     if (widget.mode.contains(ModeEnum.distanceRun)) {
@@ -76,13 +75,19 @@ class _MapScreenState extends State<MapScreen> {
         body: Consumer<LocationStream>(
           builder: (_, provider, _) {
 
+            if (provider.currentLocationStream == null) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+
             //get the polyline
             final polyline = provider.getPolyline;
             final userLocation = provider.currentLocationStream;
 
             //changing the camera position to the new position of user
             _controller?.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-              target: userLocation,
+              target: userLocation!,
               zoom: 18
             )));
 
@@ -107,7 +112,7 @@ class _MapScreenState extends State<MapScreen> {
                     ),
                   },
                   polylines: {
-                    polyline
+                    polyline!
                   },
                   onMapCreated: (controller) {
                     _controller = controller;
