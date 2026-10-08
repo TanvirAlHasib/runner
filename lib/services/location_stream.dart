@@ -44,4 +44,10 @@ class LocationStream extends ChangeNotifier{
         });
   }
 
+  //when user will close the app
+  //then app will stop location streaming
+  void cancelStream(){
+    positionStream?.cancel();
+  }
+
 }
