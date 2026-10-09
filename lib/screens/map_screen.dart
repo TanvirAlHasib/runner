@@ -10,9 +10,9 @@ import 'package:runner/services/get_location.dart';
 import '../constraints/color_constraints.dart';
 
 class MapScreen extends StatefulWidget {
-  const MapScreen({super.key, this.fromLatLng, this.toLatLng, required this.mode});
-  final LatLng? fromLatLng;
-  final LatLng? toLatLng;
+  MapScreen({super.key, required this.mode});
+  LatLng? fromLatLng;
+  LatLng? toLatLng;
   final String mode;
 
   @override
@@ -26,6 +26,7 @@ class _MapScreenState extends State<MapScreen> {
   bool isLoading = false;
   GoogleMapController? _controller;
   bool searchEnable = false;
+  TextEditingController locationSearch = TextEditingController();
 
   @override
   void initState() {
@@ -45,6 +46,7 @@ class _MapScreenState extends State<MapScreen> {
   @override
   void dispose() {
     context.read<LocationStream>().cancelStream();
+    locationSearch.dispose();
     super.dispose();
   }
 
@@ -165,12 +167,30 @@ class _MapScreenState extends State<MapScreen> {
               Visibility(
                 visible: searchEnable,
                 child: Expanded(child: TextFormField(
+                  controller: locationSearch,
                   autofocus: true,
                   onTapOutside: (event) {
+                    locationSearch.clear();
                     setState(() {
                       searchEnable = false;
                     });
                   },
+                  cursorColor: Color(ColorConstraints.buttonColor),
+                  style: TextStyle(
+                    color: Color(ColorConstraints.buttonColor),
+                    fontSize: 17
+                  ),
+                  decoration: InputDecoration(
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide.none
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide.none
+                    ),
+                    hint: Text("Search destination location", style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                      color: Colors.white30
+                    ),),
+                  ),
                 ))
               )
             ],
