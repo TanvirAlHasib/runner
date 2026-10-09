@@ -162,93 +162,7 @@ class _MapScreenState extends State<MapScreen> {
     } else if(widget.mode.contains(ModeEnum.distanceRun)){
       return Scaffold(
         backgroundColor: Colors.black,
-        appBar: AppBar(
-          backgroundColor: Color(ColorConstraints.splashBackground_0),
-          elevation: 3,
-          title: Row(
-            spacing: 20,
-            children: [
-              Text("Runner", style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-                  color: Color(ColorConstraints.buttonColor),
-                  fontWeight: FontWeight.w800
-              ),),
-              Visibility(
-                visible: searchEnable,
-                child: Expanded(child: TextFormField(
-                  controller: locationSearch,
-                  autofocus: true,
-                  onChanged: (value) async{
-
-                    if(_timer?.isActive ?? false){
-                      _timer?.cancel();
-                    }
-
-                    if (value.isEmpty) {
-                      setState(() {
-                        prediction.clear();
-                      });
-                      return;
-                    }
-
-                    _timer = Timer(Duration(milliseconds: 500), () async {
-                      Response response = await AutoCompleteLocationService.getAddress(value);
-                      if(response.statusCode == 200 || response.statusCode == 201){
-                        final responseMap = jsonDecode(response.body);
-                        final autoCompleteLocations = AutoCompleteLocationModel.fromJson(responseMap);
-                        prediction.clear();
-                        for(final suggestions in autoCompleteLocations.suggestions ?? []){
-                          prediction.add(suggestions.placePrediction);
-                        }
-                        setState(() {});
-
-                        // debug print
-                        //print(predictedPlaces[0].text?.text);
-                      }
-                    },);
-
-                  },
-                  onTapOutside: (event) {
-                    locationSearch.clear();
-                    setState(() {
-                      searchEnable = false;
-                    });
-                  },
-                  cursorColor: Color(ColorConstraints.buttonColor),
-                  style: TextStyle(
-                    color: Color(ColorConstraints.buttonColor),
-                    fontSize: 17
-                  ),
-                  decoration: InputDecoration(
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide.none
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide.none
-                    ),
-                    hint: Text("Search destination location", style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                      color: Colors.white30
-                    ),),
-                  ),
-                ))
-              )
-            ],
-          ),
-          automaticallyImplyLeading: false,
-          actions: [
-            Visibility(
-              visible: !searchEnable,
-              child: IconButton(
-                onPressed: () {
-                  setState(() {
-                    searchEnable = true;
-                  });
-                },
-                icon: Icon(Icons.search, color: Color(ColorConstraints.buttonColor), size: 25,),
-              )
-            ),
-          ],
-          actionsPadding: const EdgeInsets.only(right: 8),
-        ),
+        appBar: distanceAppBar(context),
         body: Stack(
           alignment: AlignmentGeometry.bottomCenter,
           children: [
@@ -336,6 +250,97 @@ class _MapScreenState extends State<MapScreen> {
       // for timer interface
       return Scaffold();
     }
+  }
+
+  // distance mode app bar
+  AppBar distanceAppBar(BuildContext context) {
+    return AppBar(
+        backgroundColor: Color(ColorConstraints.splashBackground_0),
+        elevation: 3,
+        title: Row(
+          spacing: 20,
+          children: [
+            Text("Runner", style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                color: Color(ColorConstraints.buttonColor),
+                fontWeight: FontWeight.w800
+            ),),
+            Visibility(
+              visible: searchEnable,
+              child: Expanded(child: TextFormField(
+                controller: locationSearch,
+                autofocus: true,
+                onChanged: (value) async{
+
+                  if(_timer?.isActive ?? false){
+                    _timer?.cancel();
+                  }
+
+                  if (value.isEmpty) {
+                    setState(() {
+                      prediction.clear();
+                    });
+                    return;
+                  }
+
+                  _timer = Timer(Duration(milliseconds: 500), () async {
+                    Response response = await AutoCompleteLocationService.getAddress(value);
+                    if(response.statusCode == 200 || response.statusCode == 201){
+                      final responseMap = jsonDecode(response.body);
+                      final autoCompleteLocations = AutoCompleteLocationModel.fromJson(responseMap);
+                      prediction.clear();
+                      for(final suggestions in autoCompleteLocations.suggestions ?? []){
+                        prediction.add(suggestions.placePrediction);
+                      }
+                      setState(() {});
+
+                      // debug print
+                      //print(predictedPlaces[0].text?.text);
+                    }
+                  },);
+
+                },
+                onTapOutside: (event) {
+                  locationSearch.clear();
+                  setState(() {
+                    searchEnable = false;
+                  });
+                },
+                cursorColor: Color(ColorConstraints.buttonColor),
+                style: TextStyle(
+                  color: Color(ColorConstraints.buttonColor),
+                  fontSize: 17
+                ),
+                decoration: InputDecoration(
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide.none
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide.none
+                  ),
+                  hint: Text("Search destination location", style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                    color: Colors.white30
+                  ),),
+                ),
+              ))
+            )
+          ],
+        ),
+        automaticallyImplyLeading: false,
+        actions: [
+          Visibility(
+            visible: !searchEnable,
+            child: IconButton(
+              onPressed: () {
+                setState(() {
+                  searchEnable = true;
+                });
+              },
+              icon: Icon(Icons.search, color: Color(ColorConstraints.buttonColor), size: 25,),
+            )
+          ),
+        ],
+        actionsPadding: const EdgeInsets.only(right: 8),
+      );
   }
 }
 
