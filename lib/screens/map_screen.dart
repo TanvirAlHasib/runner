@@ -163,7 +163,9 @@ class _MapScreenState extends State<MapScreen> {
           actions: [
             IconButton(
               onPressed: () {
-
+                setState(() {
+                  searchEnable = true;
+                });
               },
               icon: Icon(Icons.search, color: Color(ColorConstraints.buttonColor)),
             )

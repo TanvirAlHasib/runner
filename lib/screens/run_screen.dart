@@ -124,7 +124,7 @@ class _RunScreenState extends State<RunScreen> {
                                   flagDistance = true;
                                   flagTime = false;
                                 });
-                                flagDistance ? Navigator.push(context, MaterialPageRoute(builder: (context) => SelectLocationScreen(),)): null;
+                                //Navigator.push(context, MaterialPageRoute(builder: (context) => MapScreen(mode: ModeEnum.distanceRun),)): null;
                               },
                               child: runGoals(
                                 "lib/assets/icons/route.svg",
@@ -157,22 +157,25 @@ class _RunScreenState extends State<RunScreen> {
                 ),
               ),
               Spacer(),
-              Visibility(
-                visible: flagRun,
-                child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => MapScreen(mode: ModeEnum.freeRun,),));
-                    },
-                    style: ElevatedButton.styleFrom(
-                        minimumSize: Size.fromHeight(58),
-                        backgroundColor: Color(ColorConstraints.buttonColor),
-                        foregroundColor: Color(ColorConstraints.buttonFontColor),
-                        textStyle: Theme.of(context).textTheme.headlineSmall!.copyWith(
-                            fontWeight: FontWeight.w800
-                        )
-                    ),
-                    child: Text("Start Run")
+              ElevatedButton(
+                onPressed: () {
+                  if(flagRun){
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => MapScreen(mode: ModeEnum.freeRun,),));
+                  } else if(flagDistance){
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => MapScreen(mode: ModeEnum.distanceRun,),));
+                  } else {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => MapScreen(mode: ModeEnum.timeRun,),));
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                    minimumSize: Size.fromHeight(58),
+                    backgroundColor: Color(ColorConstraints.buttonColor),
+                    foregroundColor: Color(ColorConstraints.buttonFontColor),
+                    textStyle: Theme.of(context).textTheme.headlineSmall!.copyWith(
+                        fontWeight: FontWeight.w800
+                    )
                 ),
+                child: Text("Start Run")
               ),
             ],
           ),
