@@ -35,6 +35,7 @@ class _MapScreenState extends State<MapScreen> {
   TextEditingController locationSearch = TextEditingController();
   List<PlacePrediction> prediction = [];
   Timer? _timer;
+  GoogleMapController? distanceMapController;
 
   @override
   void initState() {
@@ -108,6 +109,7 @@ class _MapScreenState extends State<MapScreen> {
                   zoomGesturesEnabled: true,
                   zoomControlsEnabled: true,
                   myLocationButtonEnabled: true,
+                  myLocationEnabled: true,
                   initialCameraPosition: CameraPosition(
                     target: userLocation,
                     zoom: 18,
@@ -259,10 +261,17 @@ class _MapScreenState extends State<MapScreen> {
               ),
             ): GoogleMap(
               mapType: MapType.hybrid,
+              compassEnabled: true,
+              zoomControlsEnabled: true,
+              myLocationButtonEnabled: true,
+              myLocationEnabled: true,
               initialCameraPosition: CameraPosition(
                 target: LatLng(userLat!, userLng!),
                 zoom: 18,
               ),
+              onMapCreated: (controller) {
+                distanceMapController = controller;
+              },
               markers: {
                 Marker(
                   markerId: MarkerId("from"),
