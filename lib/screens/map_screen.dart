@@ -108,8 +108,9 @@ class _MapScreenState extends State<MapScreen> {
                   mapType: MapType.hybrid,
                   zoomGesturesEnabled: true,
                   zoomControlsEnabled: true,
-                  myLocationButtonEnabled: true,
+                  myLocationButtonEnabled: false,
                   myLocationEnabled: true,
+                  compassEnabled: true,
                   initialCameraPosition: CameraPosition(
                     target: userLocation,
                     zoom: 18,
@@ -273,11 +274,6 @@ class _MapScreenState extends State<MapScreen> {
                 distanceMapController = controller;
               },
               markers: {
-                Marker(
-                  markerId: MarkerId("from"),
-                  position: LatLng(userLat!, userLng!),
-                  icon: BitmapDescriptor.defaultMarker
-                ),
                 if(widget.toLatLng != null)
                   Marker(
                       markerId: MarkerId("to"),

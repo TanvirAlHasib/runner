@@ -56,6 +56,8 @@ class _RunScreenState extends State<RunScreen> {
                             child: (widget.lat == null || widget.lang == null) ? Center(child: CircularProgressIndicator())
                                 : GoogleMap(
                               mapType: MapType.hybrid,
+                              zoomControlsEnabled: false,
+                              compassEnabled: true,
                               initialCameraPosition: CameraPosition(
                                 target: LatLng(widget.lat!, widget.lang!),
                                 zoom: 18,
