@@ -25,6 +25,7 @@ class _MapScreenState extends State<MapScreen> {
   List<LatLng> routePoints = [];
   bool isLoading = false;
   GoogleMapController? _controller;
+  bool searchEnable = false;
 
   @override
   void initState() {
@@ -149,26 +150,44 @@ class _MapScreenState extends State<MapScreen> {
         ),
       );
     } else if(widget.mode.contains(ModeEnum.distanceRun)){
-      bool searchEnable = false;
       return Scaffold(
         backgroundColor: Colors.black,
         appBar: AppBar(
           backgroundColor: Color(ColorConstraints.splashBackground_0),
           elevation: 3,
-          title: Text("Runner", style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-              color: Color(ColorConstraints.buttonColor),
-              fontWeight: FontWeight.w800
-          ),),
+          title: Row(
+            spacing: 20,
+            children: [
+              Text("Runner", style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                  color: Color(ColorConstraints.buttonColor),
+                  fontWeight: FontWeight.w800
+              ),),
+              Visibility(
+                visible: searchEnable,
+                child: Expanded(child: TextFormField(
+                  autofocus: true,
+                  onTapOutside: (event) {
+                    setState(() {
+                      searchEnable = false;
+                    });
+                  },
+                ))
+              )
+            ],
+          ),
           automaticallyImplyLeading: false,
           actions: [
-            IconButton(
-              onPressed: () {
-                setState(() {
-                  searchEnable = true;
-                });
-              },
-              icon: Icon(Icons.search, color: Color(ColorConstraints.buttonColor)),
-            )
+            Visibility(
+              visible: !searchEnable,
+              child: IconButton(
+                onPressed: () {
+                  setState(() {
+                    searchEnable = true;
+                  });
+                },
+                icon: Icon(Icons.search, color: Color(ColorConstraints.buttonColor), size: 25,),
+              )
+            ),
           ],
           actionsPadding: const EdgeInsets.only(right: 8),
         ),
