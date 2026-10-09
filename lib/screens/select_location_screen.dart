@@ -209,12 +209,12 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
 
                 ElevatedButton(
                   onPressed: () {
-                    if(_formKey.currentState!.validate()){
-                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MapScreen(
-                        mode: ModeEnum.distanceRun, fromLatLng: fromLatLng, toLatLng: toLatLng,),
-                      )
-                      );
-                    }
+                    //if(_formKey.currentState!.validate()){
+                      //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MapScreen(
+                        //mode: ModeEnum.distanceRun, fromLatLng: fromLatLng, toLatLng: toLatLng,),
+                      //)
+                      //);
+                    //}
                   },
                   style: ElevatedButton.styleFrom(
                       minimumSize: Size.fromHeight(58),

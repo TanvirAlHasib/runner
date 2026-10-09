@@ -11,7 +11,6 @@ import '../constraints/color_constraints.dart';
 
 class MapScreen extends StatefulWidget {
   MapScreen({super.key, required this.mode});
-  LatLng? fromLatLng;
   LatLng? toLatLng;
   final String mode;
 
@@ -31,13 +30,10 @@ class _MapScreenState extends State<MapScreen> {
   @override
   void initState() {
 
-    if(widget.mode.contains(ModeEnum.freeRun)){
-      getUserPositions();
-      context.read<LocationStream>().getCurrentLocationStream();
-    }
+    getUserPositions();
 
-    if (widget.mode.contains(ModeEnum.distanceRun)) {
-      getRoutePoints();
+    if(widget.mode.contains(ModeEnum.freeRun)){
+      context.read<LocationStream>().getCurrentLocationStream();
     }
     super.initState();
   }
@@ -64,7 +60,7 @@ class _MapScreenState extends State<MapScreen> {
   // calling get route points function
   Future<void> getRoutePoints() async{
     isLoading = true;
-    final points = await GettingRoutePoints.getRoutePoints(from: widget.fromLatLng!, to: widget.toLatLng!);
+    final points = await GettingRoutePoints.getRoutePoints(from: LatLng(userLat!, userLng!), to: widget.toLatLng!);
     isLoading = false;
     setState(() {
       routePoints = points;
@@ -217,29 +213,28 @@ class _MapScreenState extends State<MapScreen> {
             // here will be selected location map
             isLoading ? const Center(
               child: CircularProgressIndicator(),
-            ) : (routePoints.isEmpty ||
-                widget.fromLatLng == null ||
-                widget.toLatLng == null) ? const Center(child: Text(
+            ) : (userLat == null ||
+                userLng == null) ? const Center(child: Text(
                 "Getting no data",
                 style: TextStyle(color: Colors.white),
               ),
             ): GoogleMap(
               mapType: MapType.hybrid,
               initialCameraPosition: CameraPosition(
-                target: widget.fromLatLng!,
+                target: LatLng(userLat!, userLng!),
                 zoom: 18,
               ),
               markers: {
                 Marker(
                   markerId: MarkerId("from"),
-                  position: widget.fromLatLng!,
+                  position: LatLng(userLat!, userLng!),
                   icon: BitmapDescriptor.defaultMarker
                 ),
-                Marker(
-                  markerId: MarkerId("to"),
-                  position: widget.toLatLng!,
-                  icon: BitmapDescriptor.defaultMarker
-                ),
+                //Marker(
+                  //markerId: MarkerId("to"),
+                 // position: widget.toLatLng!,
+                 // icon: BitmapDescriptor.defaultMarker
+               // ),
               },
               polylines: {
                 Polyline(
