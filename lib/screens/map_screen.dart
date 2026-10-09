@@ -1,17 +1,24 @@
+import 'dart:async';
+import 'dart:convert';
 import 'dart:ffi' hide Size;
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 import 'package:runner/constraints/mode_enum.dart';
+import 'package:runner/models/AutoCompleteLocationModel.dart' hide Text;
+import 'package:runner/services/getLatLngFromPlaceID.dart';
 import 'package:runner/services/getting_route_points.dart';
 import 'package:runner/services/location_stream.dart';
 import 'package:runner/services/get_location.dart';
 import '../constraints/color_constraints.dart';
+import '../services/auto_complete_location_service.dart';
 
 class MapScreen extends StatefulWidget {
   MapScreen({super.key, required this.mode});
   LatLng? toLatLng;
+  LatLng? fromLatLng;
   final String mode;
 
   @override
@@ -26,6 +33,8 @@ class _MapScreenState extends State<MapScreen> {
   GoogleMapController? _controller;
   bool searchEnable = false;
   TextEditingController locationSearch = TextEditingController();
+  List<PlacePrediction> prediction = [];
+  Timer? _timer;
 
   @override
   void initState() {
@@ -58,9 +67,9 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   // calling get route points function
-  Future<void> getRoutePoints() async{
+  Future<void> getRoutePoints(LatLng from, LatLng to) async{
     isLoading = true;
-    final points = await GettingRoutePoints.getRoutePoints(from: LatLng(userLat!, userLng!), to: widget.toLatLng!);
+    final points = await GettingRoutePoints.getRoutePoints(from: from, to: to);
     isLoading = false;
     setState(() {
       routePoints = points;
@@ -165,6 +174,36 @@ class _MapScreenState extends State<MapScreen> {
                 child: Expanded(child: TextFormField(
                   controller: locationSearch,
                   autofocus: true,
+                  onChanged: (value) async{
+
+                    if(_timer?.isActive ?? false){
+                      _timer?.cancel();
+                    }
+
+                    if (value.isEmpty) {
+                      setState(() {
+                        prediction.clear();
+                      });
+                      return;
+                    }
+
+                    _timer = Timer(Duration(milliseconds: 500), () async {
+                      Response response = await AutoCompleteLocationService.getAddress(value);
+                      if(response.statusCode == 200 || response.statusCode == 201){
+                        final responseMap = jsonDecode(response.body);
+                        final autoCompleteLocations = AutoCompleteLocationModel.fromJson(responseMap);
+                        prediction.clear();
+                        for(final suggestions in autoCompleteLocations.suggestions ?? []){
+                          prediction.add(suggestions.placePrediction);
+                        }
+                        setState(() {});
+
+                        // debug print
+                        //print(predictedPlaces[0].text?.text);
+                      }
+                    },);
+
+                  },
                   onTapOutside: (event) {
                     locationSearch.clear();
                     setState(() {
@@ -230,11 +269,12 @@ class _MapScreenState extends State<MapScreen> {
                   position: LatLng(userLat!, userLng!),
                   icon: BitmapDescriptor.defaultMarker
                 ),
-                //Marker(
-                  //markerId: MarkerId("to"),
-                 // position: widget.toLatLng!,
-                 // icon: BitmapDescriptor.defaultMarker
-               // ),
+                if(widget.toLatLng != null)
+                  Marker(
+                      markerId: MarkerId("to"),
+                      position: widget.toLatLng!,
+                      icon: BitmapDescriptor.defaultMarker
+                  ),
               },
               polylines: {
                 Polyline(
@@ -247,7 +287,43 @@ class _MapScreenState extends State<MapScreen> {
               },
             ),
             // here calling running dashboard
-            RunnigDashboard()
+            RunnigDashboard(),
+            Positioned(
+              child: Visibility(
+                visible: prediction.isNotEmpty,
+                child: Expanded(
+                  child: ListView.builder(
+                    itemCount: prediction.length,
+                    itemBuilder: (context, index) {
+                      return Container(
+                        decoration: BoxDecoration(
+                          color: Color(ColorConstraints.splashBackground_0),
+                        ),
+                        child: ListTile(
+                          onTap: () async {
+                            locationSearch.text = "${prediction[index].text?.text}";
+                            // here is fetching latLng against placeID for to
+                            widget.toLatLng = await GetLatLngFromPlaceId.getLatLng(prediction[index].placeId!);
+                            getRoutePoints(LatLng(userLat!, userLng!), widget.toLatLng!);
+                            print("to lat lng: ${widget.toLatLng}");
+                            // updating the state and predictedPlaces
+                            setState(() {
+                              prediction.clear();
+                              searchEnable = false;
+                              locationSearch.clear();
+                            });
+                          },
+                          leading: Icon(Icons.location_on_sharp, color: Color(ColorConstraints.headLineFontColor),),
+                          title: Text("${prediction[index].text?.text}", style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                              color: Color(ColorConstraints.headLineFontColor)
+                          ),),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       );
