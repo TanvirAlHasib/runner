@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:runner/constraints/color_constraints.dart';
+import 'package:runner/services/get_location.dart';
 
 class LocationStream extends ChangeNotifier{
   Polyline? _polyline;
@@ -13,8 +14,11 @@ class LocationStream extends ChangeNotifier{
   Polyline? get getPolyline => _polyline;
   LatLng? get currentLocationStream => _currentLocation;
   StreamSubscription<Position>? positionStream;
+  double _totalDistance = 0;
+  double get totalDistance => _totalDistance;
+  LatLng? previousLatLng;
 
-  void getCurrentLocationStream() {
+  Future<void> getCurrentLocationStream() async {
 
     //from package example for location accuracy
     if (defaultTargetPlatform == TargetPlatform.android) {
@@ -41,6 +45,10 @@ class LocationStream extends ChangeNotifier{
 
     // supply location settings to getPositionStream
     points.clear();
+    _totalDistance = 0;
+    final currentPosition = await geolocator.getCurrentPosition(locationSettings: locationSettings);
+    previousLatLng = LatLng(currentPosition.latitude, currentPosition.longitude);
+
     positionStream = Geolocator.getPositionStream(locationSettings: locationSettings)
         .listen((Position? position) {
           //adding lat lng
@@ -52,6 +60,11 @@ class LocationStream extends ChangeNotifier{
             color: Color(ColorConstraints.buttonColor),
             points: points
           );
+          // get distance of runner in km
+          _totalDistance = (
+              _totalDistance + geolocator.distanceBetween(previousLatLng!.latitude, previousLatLng!.longitude, position.latitude, position.longitude)
+          ) / 1000;
+          previousLatLng = _currentLocation;
           notifyListeners();
         });
   }
