@@ -378,7 +378,7 @@ class RunnigDashboard extends StatelessWidget {
                         fontWeight: FontWeight.w800
                     ),),
                     Text.rich(TextSpan(
-                        text: distance != null ? "$distance" : "0",
+                        text: distance != null ? distance!.toStringAsFixed(2) : "0",
                         style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                             color: Color(ColorConstraints.buttonColor),
                             fontWeight: FontWeight.w700
@@ -444,7 +444,7 @@ class RunnigDashboard extends StatelessWidget {
                         fontWeight: FontWeight.w800
                     ),),
                     Text.rich(TextSpan(
-                        text: pace != null ? "$pace" : "0",
+                        text: pace != null ? pace!.toStringAsFixed(2) : "0",
                         style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                             color: Color(ColorConstraints.buttonColor),
                             fontWeight: FontWeight.w700
@@ -473,7 +473,7 @@ class RunnigDashboard extends StatelessWidget {
                         fontWeight: FontWeight.w800
                     ),),
                     Text.rich(TextSpan(
-                        text: speed != null ? "$speed" : "0",
+                        text: speed != null ? speed!.toStringAsFixed(1) : "0",
                         style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                             color: Color(ColorConstraints.buttonColor),
                             fontWeight: FontWeight.w700
