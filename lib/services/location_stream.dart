@@ -16,6 +16,8 @@ class LocationStream extends ChangeNotifier{
   StreamSubscription<Position>? positionStream;
   double _totalDistance = 0;
   double get totalDistance => _totalDistance;
+  double _speed = 0;
+  double get getSpeed => _speed;
   LatLng? previousLatLng;
 
   Future<void> getCurrentLocationStream() async {
@@ -46,6 +48,7 @@ class LocationStream extends ChangeNotifier{
     // supply location settings to getPositionStream
     points.clear();
     _totalDistance = 0;
+    _speed = 0;
     final currentPosition = await geolocator.getCurrentPosition(locationSettings: locationSettings);
     previousLatLng = LatLng(currentPosition.latitude, currentPosition.longitude);
 
@@ -65,6 +68,8 @@ class LocationStream extends ChangeNotifier{
               _totalDistance + geolocator.distanceBetween(previousLatLng!.latitude, previousLatLng!.longitude, position.latitude, position.longitude)
           ) / 1000;
           previousLatLng = _currentLocation;
+          // get speed of the runner in km/h
+          _speed = (position.speed) * 3.6;
           notifyListeners();
         });
   }
