@@ -131,7 +131,7 @@ class _MapScreenState extends State<MapScreen> {
                   },
                 ),
                 // here calling running dashboard
-                RunnigDashboard(),
+                RunnigDashboard(distance: provider.totalDistance, speed: provider.getSpeed,),
                 //update the camera to current location
                 Positioned(
                   bottom: 270,
@@ -348,7 +348,13 @@ class _MapScreenState extends State<MapScreen> {
 class RunnigDashboard extends StatelessWidget {
   const new({
     super.key,
+    this.distance, this.speed, this.duration, this.pace
   });
+
+  final double? distance;
+  final double? speed;
+  final double? duration;
+  final double? pace;
 
   @override
   Widget build(BuildContext context) {
@@ -372,7 +378,7 @@ class RunnigDashboard extends StatelessWidget {
                         fontWeight: FontWeight.w800
                     ),),
                     Text.rich(TextSpan(
-                        text: "5.24",
+                        text: distance != null ? "$distance" : "0",
                         style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                             color: Color(ColorConstraints.buttonColor),
                             fontWeight: FontWeight.w700
@@ -401,7 +407,7 @@ class RunnigDashboard extends StatelessWidget {
                         fontWeight: FontWeight.w800
                     ),),
                     Text.rich(TextSpan(
-                        text: "32:14",
+                        text: duration != null ? "$duration" : "0",
                         style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                             color: Color(ColorConstraints.buttonColor),
                             fontWeight: FontWeight.w700
@@ -438,7 +444,7 @@ class RunnigDashboard extends StatelessWidget {
                         fontWeight: FontWeight.w800
                     ),),
                     Text.rich(TextSpan(
-                        text: "6.09",
+                        text: pace != null ? "$pace" : "0",
                         style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                             color: Color(ColorConstraints.buttonColor),
                             fontWeight: FontWeight.w700
@@ -467,7 +473,7 @@ class RunnigDashboard extends StatelessWidget {
                         fontWeight: FontWeight.w800
                     ),),
                     Text.rich(TextSpan(
-                        text: "9.7",
+                        text: speed != null ? "$speed" : "0",
                         style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                             color: Color(ColorConstraints.buttonColor),
                             fontWeight: FontWeight.w700
