@@ -26,9 +26,9 @@ class LocationStream extends ChangeNotifier{
     if (defaultTargetPlatform == TargetPlatform.android) {
       locationSettings = AndroidSettings(
           accuracy: LocationAccuracy.high,
-          distanceFilter: 5,
+          distanceFilter: 2,
           forceLocationManager: true,
-          intervalDuration: const Duration(seconds: 5),
+          intervalDuration: const Duration(seconds: 2),
           //Set foreground notification config to keep the app alive
           //when going to the background
           foregroundNotificationConfig: const ForegroundNotificationConfig(
@@ -41,7 +41,7 @@ class LocationStream extends ChangeNotifier{
     } else {
       locationSettings = LocationSettings(
         accuracy: LocationAccuracy.high,
-        distanceFilter: 5,
+        distanceFilter: 2,
       );
     }
 
@@ -78,6 +78,8 @@ class LocationStream extends ChangeNotifier{
   //then app will stop location streaming
   void cancelStream(){
     positionStream?.cancel();
+    _speed = 0;
+    _totalDistance = 0;
     notifyListeners();
   }
 
