@@ -54,8 +54,11 @@ class LocationStream extends ChangeNotifier{
 
     positionStream = Geolocator.getPositionStream(locationSettings: locationSettings)
         .listen((Position? position) {
+          if(position!.accuracy > 10){
+            return;
+          }
           //adding lat lng
-          _currentLocation = LatLng(position!.latitude, position.longitude);
+          _currentLocation = LatLng(position.latitude, position.longitude);
           points.add(LatLng(position.latitude, position.longitude));
           _polyline = Polyline(
             polylineId: PolylineId("current_location"),
@@ -68,7 +71,8 @@ class LocationStream extends ChangeNotifier{
           _totalDistance = _totalDistance + (distanceInMeter/1000);
           previousLatLng = _currentLocation;
           // get speed of the runner in km/h
-          _speed = (position.speed) * 3.6;
+          final speedInMeter = position.speed;
+          _speed = (speedInMeter * 3.6) < 1 ? 0 : (speedInMeter * 3.6);
           notifyListeners();
         });
   }
