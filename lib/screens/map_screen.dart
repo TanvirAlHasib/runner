@@ -525,9 +525,7 @@ class RunnigDashboard extends StatelessWidget {
                 ),
                 Expanded(
                   child: ElevatedButton(
-                      onPressed: () {
-
-                      },
+                      onPressed: () {},
                       style: ElevatedButton.styleFrom(
                           minimumSize: Size.fromHeight(50),
                           backgroundColor: Color(ColorConstraints.buttonColor),
