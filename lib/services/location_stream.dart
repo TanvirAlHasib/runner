@@ -64,9 +64,8 @@ class LocationStream extends ChangeNotifier{
             points: points
           );
           // get distance of runner in km
-          _totalDistance = (
-              _totalDistance + geolocator.distanceBetween(previousLatLng!.latitude, previousLatLng!.longitude, position.latitude, position.longitude)
-          ) / 1000;
+          final distanceInMeter = geolocator.distanceBetween(previousLatLng!.latitude, previousLatLng!.longitude, position.latitude, position.longitude);
+          _totalDistance = _totalDistance + (distanceInMeter/1000);
           previousLatLng = _currentLocation;
           // get speed of the runner in km/h
           _speed = (position.speed) * 3.6;
