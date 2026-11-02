@@ -97,12 +97,11 @@ class _RunScreenState extends State<RunScreen> {
                     const SizedBox(
                       height: 18,
                     ),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        spacing: 8,
-                        children: [
-                          InkWell(
+                    Row(
+                      spacing: 8,
+                      children: [
+                        Expanded(
+                          child: InkWell(
                               onTap:() {
                                 setState((){
                                   flagRun = true;
@@ -118,7 +117,9 @@ class _RunScreenState extends State<RunScreen> {
                                 flagRun ? Color(ColorConstraints.buttonColor) : Color(ColorConstraints.headLineFontColor), // for font color
                               )
                           ),
-                          InkWell(
+                        ),
+                        Expanded(
+                          child: InkWell(
                               onTap:() {
                                 setState((){
                                   flagRun = false;
@@ -135,24 +136,8 @@ class _RunScreenState extends State<RunScreen> {
                                 flagDistance ? Color(ColorConstraints.buttonColor) : Color(ColorConstraints.headLineFontColor),
                               )
                           ),
-                          InkWell(
-                              onTap:() {
-                                setState((){
-                                  flagRun = false;
-                                  flagDistance = false;
-                                  flagTime = true;
-                                });
-                              },
-                              child: runGoals(
-                                "lib/assets/icons/timer.svg",
-                                "Time", context,
-                                flagTime ? Color(ColorConstraints.backGroundColor) : Colors.grey.shade900,
-                                flagTime ? Color(ColorConstraints.buttonColor) : Colors.grey.shade400,
-                                flagTime ? Color(ColorConstraints.buttonColor) : Color(ColorConstraints.headLineFontColor),
-                              )
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -164,8 +149,6 @@ class _RunScreenState extends State<RunScreen> {
                     Navigator.push(context, MaterialPageRoute(builder: (context) => MapScreen(mode: ModeEnum.freeRun,),));
                   } else if(flagDistance){
                     Navigator.push(context, MaterialPageRoute(builder: (context) => MapScreen(mode: ModeEnum.distanceRun,),));
-                  } else {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => MapScreen(mode: ModeEnum.timeRun,),));
                   }
                 },
                 style: ElevatedButton.styleFrom(

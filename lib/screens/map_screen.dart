@@ -160,7 +160,7 @@ class _MapScreenState extends State<MapScreen> {
           },
         ),
       );
-    } else if(widget.mode.contains(ModeEnum.distanceRun)){
+    } else {
       return Scaffold(
         backgroundColor: Colors.black,
         appBar: distanceAppBar(context),
@@ -247,9 +247,6 @@ class _MapScreenState extends State<MapScreen> {
           ],
         ),
       );
-    } else{
-      // for timer interface
-      return Scaffold();
     }
   }
 
