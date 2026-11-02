@@ -19,6 +19,8 @@ class LocationStream extends ChangeNotifier{
   int _totalTime = 0;
   DateTime _initialTime = DateTime.now();
   int get totalMinutes => _totalTime;
+  double _pace = 0;
+  double get getPace => _pace;
   double _speed = 0;
   double get getSpeed => _speed;
   LatLng? previousLatLng;
@@ -54,6 +56,7 @@ class LocationStream extends ChangeNotifier{
     _initialTime = DateTime.now();
     _totalTime = 0;
     _speed = 0;
+    _pace = 0;
     final currentPosition = await geolocator.getCurrentPosition(locationSettings: locationSettings);
     previousLatLng = LatLng(currentPosition.latitude, currentPosition.longitude);
 
@@ -80,6 +83,10 @@ class LocationStream extends ChangeNotifier{
           _speed = (speedInMeter * 3.6) < 1 ? 0 : (speedInMeter * 3.6);
           // get the duration
           _totalTime = position.timestamp.difference(_initialTime).inMinutes;
+          // get the pace of the user
+          if(totalDistance != 0){
+            _pace = _totalTime / _totalDistance;
+          }
           notifyListeners();
         });
   }
@@ -90,6 +97,7 @@ class LocationStream extends ChangeNotifier{
     positionStream?.cancel();
     _initialTime = DateTime.now();
     _speed = 0;
+    _pace = 0;
     _totalDistance = 0;
     _totalTime = 0;
     notifyListeners();

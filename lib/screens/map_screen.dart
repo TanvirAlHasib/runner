@@ -132,7 +132,7 @@ class _MapScreenState extends State<MapScreen> {
                 ),
                 // here calling running dashboard
                 RunnigDashboard(distance: provider.totalDistance, speed: provider.getSpeed,
-                  duration: provider.totalMinutes,),
+                  duration: provider.totalMinutes, pace: provider.getPace,),
                 //update the camera to current location
                 Positioned(
                   bottom: 270,

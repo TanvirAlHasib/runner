@@ -110,7 +110,7 @@ class RunnigDashboard extends StatelessWidget {
                             width: 5,
                           )),
                           TextSpan(
-                              text: "KM",
+                              text: "Min/KM",
                               style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                                   color: Color(ColorConstraints.buttonColor),
                                   fontWeight: FontWeight.w700,
