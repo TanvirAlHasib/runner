@@ -11,6 +11,7 @@ import 'package:runner/services/getLatLngFromPlaceID.dart';
 import 'package:runner/services/getting_route_points.dart';
 import 'package:runner/services/location_stream.dart';
 import 'package:runner/services/get_location.dart';
+import 'package:runner/utils/popup.dart';
 import '../constraints/color_constraints.dart';
 import '../services/auto_complete_location_service.dart';
 import '../widgets/running_dashboard.dart';
@@ -93,6 +94,10 @@ class _MapScreenState extends State<MapScreen> {
               return const Center(
                 child: CircularProgressIndicator(),
               );
+            }
+
+            if(provider.getSpeed == 0 && provider.totalDistance != 0 && provider.totalMinutes != 0){
+              Popup.showPopUp(context);
             }
 
             //changing the camera position to the new position of user
