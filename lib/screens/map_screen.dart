@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:ffi' hide Size;
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -14,6 +13,7 @@ import 'package:runner/services/location_stream.dart';
 import 'package:runner/services/get_location.dart';
 import '../constraints/color_constraints.dart';
 import '../services/auto_complete_location_service.dart';
+import '../widgets/running_dashboard.dart';
 
 class MapScreen extends StatefulWidget {
   MapScreen({super.key, required this.mode});
@@ -131,7 +131,8 @@ class _MapScreenState extends State<MapScreen> {
                   },
                 ),
                 // here calling running dashboard
-                RunnigDashboard(distance: provider.totalDistance, speed: provider.getSpeed,),
+                RunnigDashboard(distance: provider.totalDistance, speed: provider.getSpeed,
+                  duration: provider.totalMinutes,),
                 //update the camera to current location
                 Positioned(
                   bottom: 270,
@@ -224,7 +225,7 @@ class _MapScreenState extends State<MapScreen> {
                             // here is fetching latLng against placeID for to
                             widget.toLatLng = await GetLatLngFromPlaceId.getLatLng(prediction[index].placeId!);
                             getRoutePoints(LatLng(userLat!, userLng!), widget.toLatLng!);
-                            print("to lat lng: ${widget.toLatLng}");
+                            //print("to lat lng: ${widget.toLatLng}");
                             // updating the state and predictedPlaces
                             setState(() {
                               prediction.clear();
@@ -341,207 +342,5 @@ class _MapScreenState extends State<MapScreen> {
         ],
         actionsPadding: const EdgeInsets.only(right: 8),
       );
-  }
-}
-
-//below running dashboard
-class RunnigDashboard extends StatelessWidget {
-  const new({
-    super.key,
-    this.distance, this.speed, this.duration, this.pace
-  });
-
-  final double? distance;
-  final double? speed;
-  final double? duration;
-  final double? pace;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 260,
-      child: Container(
-        padding: const EdgeInsets.only(top: 15, left: 20, right: 20, bottom: 5),
-        decoration: BoxDecoration(
-            color: Color(ColorConstraints.backGroundColor)
-        ),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: .spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: .start,
-                  children: [
-                    Text("Distance", style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                        color: Color(ColorConstraints.bodyFontColor),
-                        fontWeight: FontWeight.w800
-                    ),),
-                    Text.rich(TextSpan(
-                        text: distance != null ? distance!.toStringAsFixed(2) : "0",
-                        style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-                            color: Color(ColorConstraints.buttonColor),
-                            fontWeight: FontWeight.w700
-                        ),
-                        children: [
-                          WidgetSpan(child: const SizedBox(
-                            width: 5,
-                          )),
-                          TextSpan(
-                              text: "KM",
-                              style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-                                  color: Color(ColorConstraints.buttonColor),
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 23
-                              )
-                          )
-                        ]
-                    )),
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: .start,
-                  children: [
-                    Text("Time", style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                        color: Color(ColorConstraints.bodyFontColor),
-                        fontWeight: FontWeight.w800
-                    ),),
-                    Text.rich(TextSpan(
-                        text: duration != null ? "$duration" : "0",
-                        style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-                            color: Color(ColorConstraints.buttonColor),
-                            fontWeight: FontWeight.w700
-                        ),
-                        children: [
-                          WidgetSpan(child: const SizedBox(
-                            width: 5,
-                          )),
-                          TextSpan(
-                              text: "Sec",
-                              style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-                                  color: Color(ColorConstraints.buttonColor),
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 23
-                              )
-                          )
-                        ]
-                    )),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            Row(
-              mainAxisAlignment: .spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: .start,
-                  children: [
-                    Text("Pace", style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                        color: Color(ColorConstraints.bodyFontColor),
-                        fontWeight: FontWeight.w800
-                    ),),
-                    Text.rich(TextSpan(
-                        text: pace != null ? pace!.toStringAsFixed(2) : "0",
-                        style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-                            color: Color(ColorConstraints.buttonColor),
-                            fontWeight: FontWeight.w700
-                        ),
-                        children: [
-                          WidgetSpan(child: const SizedBox(
-                            width: 5,
-                          )),
-                          TextSpan(
-                              text: "KM",
-                              style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-                                  color: Color(ColorConstraints.buttonColor),
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 23
-                              )
-                          )
-                        ]
-                    )),
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: .start,
-                  children: [
-                    Text("Speed", style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                        color: Color(ColorConstraints.bodyFontColor),
-                        fontWeight: FontWeight.w800
-                    ),),
-                    Text.rich(TextSpan(
-                        text: speed != null ? speed!.toStringAsFixed(1) : "0",
-                        style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-                            color: Color(ColorConstraints.buttonColor),
-                            fontWeight: FontWeight.w700
-                        ),
-                        children: [
-                          WidgetSpan(child: const SizedBox(
-                            width: 5,
-                          )),
-                          TextSpan(
-                              text: "KM/H",
-                              style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-                                  color: Color(ColorConstraints.buttonColor),
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 23
-                              )
-                          )
-                        ]
-                    )),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 22,
-            ),
-            Row(
-              spacing: 15,
-              children: [
-                Expanded(
-                  child: ElevatedButton(
-                      onPressed: () {
-
-                      },
-                      style: ElevatedButton.styleFrom(
-                          minimumSize: Size.fromHeight(50),
-                          backgroundColor: Colors.transparent,
-                          foregroundColor: Color(ColorConstraints.buttonColor),
-                          side: BorderSide(
-                              color: Color(ColorConstraints.buttonColor),
-                              strokeAlign: BorderSide.strokeAlignOutside,
-                              width: 2
-                          ),
-                          textStyle: Theme.of(context).textTheme.headlineSmall!.copyWith(
-                            fontWeight: FontWeight.w600,
-                          )
-                      ),
-                      child: Text("Finish")
-                  ),
-                ),
-                Expanded(
-                  child: ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                          minimumSize: Size.fromHeight(50),
-                          backgroundColor: Color(ColorConstraints.buttonColor),
-                          foregroundColor: Color(ColorConstraints.buttonFontColor),
-                          textStyle: Theme.of(context).textTheme.headlineSmall!.copyWith(
-                              fontWeight: FontWeight.w800
-                          )
-                      ),
-                      child: Text("Pause Run")
-                  ),
-                ),
-              ],
-            )
-          ],
-        ),
-      ),
-    );
   }
 }
