@@ -15,7 +15,7 @@ class RunnigDashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 260,
+      height: 250,
       child: Container(
         padding: const EdgeInsets.only(top: 15, left: 20, right: 20, bottom: 5),
         decoration: BoxDecoration(
@@ -177,20 +177,6 @@ class RunnigDashboard extends StatelessWidget {
                           )
                       ),
                       child: Text("Finish")
-                  ),
-                ),
-                Expanded(
-                  child: ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                          minimumSize: Size.fromHeight(50),
-                          backgroundColor: Color(ColorConstraints.buttonColor),
-                          foregroundColor: Color(ColorConstraints.buttonFontColor),
-                          textStyle: Theme.of(context).textTheme.headlineSmall!.copyWith(
-                              fontWeight: FontWeight.w800
-                          )
-                      ),
-                      child: Text("Pause Run")
                   ),
                 ),
               ],
