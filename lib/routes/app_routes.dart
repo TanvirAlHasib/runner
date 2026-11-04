@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:runner/constraints/color_constraints.dart';
 import 'package:runner/screens/home_screen.dart';
 import 'package:runner/screens/run_screen.dart';
 
@@ -42,21 +43,44 @@ class AppRoutes extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: navigationShell,
-      bottomNavigationBar: BottomNavigationBar(
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
-            label: "Home",
+    return PopScope(
+      canPop: navigationShell.currentIndex == 0,
+      onPopInvokedWithResult: (didPop, result) {
+        if(!didPop && navigationShell.currentIndex != 0){
+          navigationShell.goBranch(0);
+        }
+      },
+      child: Scaffold(
+        body: navigationShell,
+        bottomNavigationBar: BottomNavigationBar(
+          backgroundColor: Color(ColorConstraints.backGroundColor),
+          currentIndex: navigationShell.currentIndex,
+          onTap: (value) {
+            navigationShell.goBranch(value);
+          },
+          selectedFontSize: 15,
+          selectedItemColor: Color(ColorConstraints.buttonColor),
+          selectedLabelStyle: TextStyle(
+            fontWeight: FontWeight.w700
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.run_circle_outlined),
-            activeIcon: Icon(Icons.run_circle),
-            label: "Run",
-          )
-        ],
+          showUnselectedLabels: false,
+          unselectedItemColor: Color(ColorConstraints.bodyFontColor),
+          unselectedIconTheme: IconThemeData(
+            size: 26
+          ),
+          items: [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home_outlined),
+              activeIcon: Icon(Icons.home),
+              label: "Home",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.run_circle_outlined),
+              activeIcon: Icon(Icons.run_circle),
+              label: "Run",
+            )
+          ],
+        ),
       ),
     );
   }
