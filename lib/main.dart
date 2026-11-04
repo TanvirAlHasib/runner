@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:runner/routes/app_routes.dart';
 import 'package:runner/services/location_stream.dart';
 import 'package:runner/screens/splash_screen.dart';
 
@@ -17,12 +18,12 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Runner Application',
       theme: ThemeData(
         colorScheme: .fromSeed(seedColor: Color(0XFFC6FF00)),
       ),
-      home: SplashScreen(),
+      routerConfig: router,
     );
   }
 }
