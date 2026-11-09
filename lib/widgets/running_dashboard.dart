@@ -166,7 +166,8 @@ class RunnigDashboard extends StatelessWidget {
                       RunDetailsModel runDetails = RunDetailsModel(
                         distance: distance!,
                         pace: pace!,
-                        dateTime: DateTime.now()
+                        dateTime: DateTime.now(),
+                        duration: duration ?? 0
                       );
                       // navigate to the preview screen
                       context.goNamed("preview", extra: runDetails);
