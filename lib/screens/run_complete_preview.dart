@@ -18,6 +18,7 @@ class _RunCompletePreviewState extends State<RunCompletePreview> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
+        padding: const EdgeInsetsGeometry.all(10),
         width: double.infinity,
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -33,6 +34,7 @@ class _RunCompletePreviewState extends State<RunCompletePreview> {
           crossAxisAlignment: .center,
           mainAxisAlignment: .center,
           children: [
+            Spacer(flex: 2,),
             RunCompleteScreenCard(
               shadowColor: Color(ColorConstraints.buttonColor),
               child: Lottie.asset("lib/assets/animations/walking_avocado.json", height: 80,
@@ -58,8 +60,8 @@ class _RunCompletePreviewState extends State<RunCompletePreview> {
               shadowColor: Color(ColorConstraints.buttonColor),
               elevation: 0,
               child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: Text("${widget.runDetailsModel.distance} KM", style: Theme.of(context).textTheme.headlineSmall!.copyWith(
+                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
+                child: Text("${widget.runDetailsModel.distance.toStringAsFixed(2)} KM", style: Theme.of(context).textTheme.headlineSmall!.copyWith(
                   color: Color(ColorConstraints.buttonColor),
                   fontWeight: FontWeight.w600
                 ),),
@@ -80,6 +82,24 @@ class _RunCompletePreviewState extends State<RunCompletePreview> {
               height: 250,
               child: Lottie.asset("lib/assets/animations/spin.json"),
             ),
+            const SizedBox(
+              height: 30,
+            ),
+            FilledButton(
+              onPressed: () {
+
+              },
+              style: FilledButton.styleFrom(
+                minimumSize: Size.fromHeight(60),
+                backgroundColor: Color(ColorConstraints.buttonColor),
+                foregroundColor: Color(ColorConstraints.splashBackground_0),
+                textStyle: Theme.of(context).textTheme.headlineSmall!.copyWith(
+                  fontWeight: FontWeight.w700
+                )
+              ),
+              child: Text("SAVE RUN"),
+            ),
+            Spacer()
           ],
         ),
       ),

@@ -26,7 +26,7 @@ class DetailsCard extends StatelessWidget {
             ),),
             Text(detail, style: Theme.of(context).textTheme.headlineSmall!.copyWith(
                 color: Color(ColorConstraints.headLineFontColor),
-                fontSize: 18,
+                fontSize: 20,
                 fontWeight: FontWeight.w600
             ),),
           ],
