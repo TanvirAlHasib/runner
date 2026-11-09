@@ -2,9 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
+import 'package:provider/provider.dart';
 import 'package:runner/constraints/color_constraints.dart';
 import 'package:runner/constraints/firebase_constants.dart';
 import 'package:runner/models/run_details_model.dart';
+import '../provider/location_stream.dart';
 import '../widgets/run_complete_screen_card.dart';
 import '../widgets/run_complete_screen_details.dart';
 
@@ -94,7 +96,13 @@ class _RunCompletePreviewState extends State<RunCompletePreview> {
               spacing: 10,
               children: [
                 Expanded(child: FilledButton(
-                  onPressed: () => context.goNamed("home"),
+                  onPressed: () {
+                    //canceling the location stream
+                    context.read<LocationStream>().cancelStream();
+                    // navigating to the home
+                    StatefulNavigationShell.of(context).goBranch(1, initialLocation: true);
+                    context.goNamed("home");
+                  },
                   style: FilledButton.styleFrom(
                       minimumSize: Size.fromHeight(50),
                       backgroundColor: Colors.transparent,
@@ -125,6 +133,7 @@ class _RunCompletePreviewState extends State<RunCompletePreview> {
                         "duration": widget.runDetailsModel.duration
                       });
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Data saved successfully!!")));
+                      StatefulNavigationShell.of(context).goBranch(1, initialLocation: true);
                       context.goNamed("home");
                     } on FirebaseException catch (e){
                       setState(() {
