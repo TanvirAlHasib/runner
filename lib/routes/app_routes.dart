@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:runner/constraints/color_constraints.dart';
 import 'package:runner/screens/home_screen.dart';
+import 'package:runner/screens/run_complete_preview.dart';
 import 'package:runner/screens/run_screen.dart';
 import 'package:runner/screens/splash_screen.dart';
 
@@ -35,6 +36,13 @@ final GoRouter router = GoRouter(
               path: "/run",
               name: "run",
               builder: (context, state) => RunScreen(),
+              routes: [
+                GoRoute(
+                  path: "/run/preview",
+                  name: "preview",
+                  builder: (context, state) => RunCompletePreview(),
+                ),
+              ]
             )
           ]
         )

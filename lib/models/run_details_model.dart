@@ -1,6 +1,6 @@
 class RunDetailsModel {
 
-  RunDetailsModel({required this.title, required this.distance, required this.pace, required this.dateTime});
+  RunDetailsModel({this.title = "Run", required this.distance, required this.pace, required this.dateTime});
 
   final String title;
   final double distance;
