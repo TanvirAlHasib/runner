@@ -2,7 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:runner/routes/app_routes.dart';
-import 'package:runner/services/location_stream.dart';
+import 'package:runner/provider/location_stream.dart';
 
 import 'firebase_options.dart';
 

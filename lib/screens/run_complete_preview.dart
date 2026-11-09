@@ -1,6 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 import 'package:runner/constraints/color_constraints.dart';
+import 'package:runner/constraints/firebase_constants.dart';
 import 'package:runner/models/run_details_model.dart';
 import '../widgets/run_complete_screen_card.dart';
 import '../widgets/run_complete_screen_details.dart';
@@ -14,6 +17,8 @@ class RunCompletePreview extends StatefulWidget {
 }
 
 class _RunCompletePreviewState extends State<RunCompletePreview> {
+  final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
+  bool isLoading = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -73,8 +78,8 @@ class _RunCompletePreviewState extends State<RunCompletePreview> {
             Row(
               mainAxisSize: .min,
               children: [
-                DetailsCard(detail: "${widget.runDetailsModel.duration}", title: "DURATION",),
-                DetailsCard(detail: "${widget.runDetailsModel.pace}", title: "AVG PACE",),
+                DetailsCard(detail: "${widget.runDetailsModel.duration} Min", title: "DURATION",),
+                DetailsCard(detail: "${widget.runDetailsModel.pace.toStringAsFixed(2)} Min/KM", title: "AVG PACE",),
               ],
             ),
             SizedBox(
@@ -85,19 +90,66 @@ class _RunCompletePreviewState extends State<RunCompletePreview> {
             const SizedBox(
               height: 30,
             ),
-            FilledButton(
-              onPressed: () {
-
-              },
-              style: FilledButton.styleFrom(
-                minimumSize: Size.fromHeight(60),
-                backgroundColor: Color(ColorConstraints.buttonColor),
-                foregroundColor: Color(ColorConstraints.splashBackground_0),
-                textStyle: Theme.of(context).textTheme.headlineSmall!.copyWith(
-                  fontWeight: FontWeight.w700
-                )
-              ),
-              child: Text("SAVE RUN"),
+            Row(
+              spacing: 10,
+              children: [
+                Expanded(child: FilledButton(
+                  onPressed: () => context.goNamed("home"),
+                  style: FilledButton.styleFrom(
+                      minimumSize: Size.fromHeight(50),
+                      backgroundColor: Colors.transparent,
+                      foregroundColor: Color(ColorConstraints.buttonColor),
+                      side: BorderSide(
+                          color: Color(ColorConstraints.buttonColor),
+                          strokeAlign: BorderSide.strokeAlignOutside,
+                          width: 2
+                      ),
+                      textStyle: Theme.of(context).textTheme.headlineSmall!.copyWith(
+                        fontWeight: FontWeight.w600,
+                      )
+                  ),
+                  child: Text("CANCEL"),
+                ),),
+                Expanded(child: FilledButton(
+                  onPressed: isLoading ? null :() async {
+                    try{
+                      setState(() {
+                        isLoading = true;
+                      });
+                      await _firebaseFirestore.collection(FirebaseConstants.collectionName).doc("user_gmail")
+                          .collection(FirebaseConstants.history).add({
+                        "title": widget.runDetailsModel.title,
+                        "distance": widget.runDetailsModel.distance,
+                        "pace": widget.runDetailsModel.pace,
+                        "dateTime": widget.runDetailsModel.dateTime,
+                        "duration": widget.runDetailsModel.duration
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Data saved successfully!!")));
+                      context.goNamed("home");
+                    } on FirebaseException catch (e){
+                      setState(() {
+                        isLoading = false;
+                      });
+                      if(mounted){
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message!)));
+                      }
+                    } finally{
+                      setState(() {
+                        isLoading = false;
+                      });
+                    }
+                  },
+                  style: FilledButton.styleFrom(
+                      minimumSize: Size.fromHeight(50),
+                      backgroundColor: Color(ColorConstraints.buttonColor),
+                      foregroundColor: Color(ColorConstraints.splashBackground_0),
+                      textStyle: Theme.of(context).textTheme.headlineSmall!.copyWith(
+                          fontWeight: FontWeight.w700
+                      )
+                  ),
+                  child: Text("SAVE"),
+                ),),
+              ],
             ),
             Spacer()
           ],

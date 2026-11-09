@@ -9,7 +9,7 @@ import 'package:runner/constraints/mode_enum.dart';
 import 'package:runner/models/AutoCompleteLocationModel.dart' hide Text;
 import 'package:runner/services/getLatLngFromPlaceID.dart';
 import 'package:runner/services/getting_route_points.dart';
-import 'package:runner/services/location_stream.dart';
+import 'package:runner/provider/location_stream.dart';
 import 'package:runner/services/get_location.dart';
 import 'package:runner/utils/popup.dart';
 import '../constraints/color_constraints.dart';

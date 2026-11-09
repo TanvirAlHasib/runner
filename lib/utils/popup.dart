@@ -10,7 +10,7 @@ class Popup {
         title: Row(
           mainAxisSize: .min,
           children: [
-            LottieBuilder.asset("lib/assets/animations/walking_avocado.json", height: 15, width: 15,),
+            LottieBuilder.asset("lib/assets/animations/walking_avocado.json", height: 25, width: 25,),
             Text("Alert!!", style: Theme.of(context).textTheme.bodyLarge!.copyWith(
               color: Color(ColorConstraints.buttonColor),
             ),)
