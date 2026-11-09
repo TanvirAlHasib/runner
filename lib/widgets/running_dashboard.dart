@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:runner/models/run_details_model.dart';
 import '../constraints/color_constraints.dart';
 
 class RunnigDashboard extends StatelessWidget {
@@ -160,23 +162,29 @@ class RunnigDashboard extends StatelessWidget {
               children: [
                 Expanded(
                   child: ElevatedButton(
-                      onPressed: () {
-
-                      },
-                      style: ElevatedButton.styleFrom(
-                          minimumSize: Size.fromHeight(50),
-                          backgroundColor: Colors.transparent,
-                          foregroundColor: Color(ColorConstraints.buttonColor),
-                          side: BorderSide(
-                              color: Color(ColorConstraints.buttonColor),
-                              strokeAlign: BorderSide.strokeAlignOutside,
-                              width: 2
-                          ),
-                          textStyle: Theme.of(context).textTheme.headlineSmall!.copyWith(
-                            fontWeight: FontWeight.w600,
-                          )
+                    onPressed: () {
+                      RunDetailsModel runDetails = RunDetailsModel(
+                        distance: distance!,
+                        pace: pace!,
+                        dateTime: DateTime.now()
+                      );
+                      // navigate to the preview screen
+                      context.goNamed("preview", extra: runDetails);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: Size.fromHeight(50),
+                      backgroundColor: Colors.transparent,
+                      foregroundColor: Color(ColorConstraints.buttonColor),
+                      side: BorderSide(
+                          color: Color(ColorConstraints.buttonColor),
+                          strokeAlign: BorderSide.strokeAlignOutside,
+                          width: 2
                       ),
-                      child: Text("Finish")
+                      textStyle: Theme.of(context).textTheme.headlineSmall!.copyWith(
+                        fontWeight: FontWeight.w600,
+                      )
+                    ),
+                    child: Text("Finish")
                   ),
                 ),
               ],
