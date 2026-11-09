@@ -3,10 +3,18 @@ import 'package:go_router/go_router.dart';
 import 'package:runner/constraints/color_constraints.dart';
 import 'package:runner/screens/home_screen.dart';
 import 'package:runner/screens/run_screen.dart';
+import 'package:runner/screens/splash_screen.dart';
 
 final GoRouter router = GoRouter(
   initialLocation: "/",
   routes: [
+    // for splash screen
+    GoRoute(
+      path: "/",
+      name: "splash",
+      builder: (context, state) => SplashScreen(),
+    ),
+    // for stateful bottom navigation
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
         return AppRoutes(navigationShell: navigationShell);
@@ -15,7 +23,7 @@ final GoRouter router = GoRouter(
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: "/",
+              path: "/home",
               name: "home",
               builder: (context, state) => HomeScreen(),
             )

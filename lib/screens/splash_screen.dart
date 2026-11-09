@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 import 'package:runner/constraints/color_constraints.dart';
-import 'package:runner/screens/home_screen.dart';
-import 'package:runner/screens/run_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -22,7 +21,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> chooseNextScreen() async{
     Future.delayed(Duration(seconds: 3), () {
       if(mounted){
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RunScreen(),));
+        context.goNamed("home");
       }
     },);
   }
