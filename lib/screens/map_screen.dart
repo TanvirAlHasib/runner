@@ -7,19 +7,22 @@ import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 import 'package:runner/constraints/mode_enum.dart';
 import 'package:runner/models/AutoCompleteLocationModel.dart' hide Text;
-import 'package:runner/services/getLatLngFromPlaceID.dart';
-import 'package:runner/services/getting_route_points.dart';
 import 'package:runner/provider/location_stream.dart';
+import 'package:runner/services/auto_complete_location_service.dart';
+import 'package:runner/services/getLatLngFromPlaceID.dart';
 import 'package:runner/services/get_location.dart';
-import 'package:runner/utils/popup.dart';
-import '../constraints/color_constraints.dart';
-import '../services/auto_complete_location_service.dart';
-import '../widgets/running_dashboard.dart';
+import 'package:runner/services/getting_route_points.dart';
+import '../widgets/destination_search_list.dart';
+import '../widgets/distance_run_app_bar.dart';
+import '../widgets/distance_run_map_view.dart';
+import '../widgets/free_run_map_view.dart';
 
 class MapScreen extends StatefulWidget {
-  MapScreen({super.key, required this.mode});
-  LatLng? toLatLng;
-  LatLng? fromLatLng;
+  const MapScreen({
+    super.key,
+    required this.mode,
+  });
+
   final String mode;
 
   @override
@@ -27,322 +30,467 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
+  // Location
   double? userLat;
   double? userLng;
+
+  // Distance Run
+  LatLng? destination;
   List<LatLng> routePoints = [];
-  bool isLoading = false;
-  GoogleMapController? _controller;
-  bool searchEnable = false;
-  TextEditingController locationSearch = TextEditingController();
-  List<PlacePrediction> prediction = [];
-  Timer? _timer;
+
+  // Loading states
+  bool isLoadingLocation = false;
+  bool isLoadingRoute = false;
+
+  // Map controllers
+  GoogleMapController? freeRunMapController;
   GoogleMapController? distanceMapController;
+
+  // Location provider
+  late LocationStream locationProvider;
+
+  // Search
+  bool searchEnabled = false;
+  final TextEditingController locationSearch = TextEditingController();
+
+  List<PlacePrediction?> predictions = [];
+
+  Timer? searchDebounce;
+
+  // Free Run
+  bool hasCenteredOnLocation = false;
+
+  // Distance Run route updates
+  Timer? routeUpdateDebounce;
+  LatLng? pendingRouteLocation;
+  LatLng? lastRouteOrigin;
+
+  int routeRequestId = 0;
+
+  bool get isFreeRun =>
+      widget.mode.contains(ModeEnum.freeRun);
 
   @override
   void initState() {
-
-    getUserPositions();
-
-    if(widget.mode.contains(ModeEnum.freeRun)){
-      context.read<LocationStream>().getCurrentLocationStream();
-    }
     super.initState();
+
+    locationProvider = context.read<LocationStream>();
+
+    if (isFreeRun) {
+      locationProvider.addListener(onLocationChanged);
+      locationProvider.getCurrentLocationStream();
+    } else {
+      locationProvider.addListener(onDistanceLocationChanged);
+      getUserPositions();
+    }
   }
 
-  //cancel the stream when leaving this screen
+  // FREE RUN LOCATION
+
+  void onLocationChanged() {
+    if (!mounted || hasCenteredOnLocation) return;
+
+    centerOnFreeRunLocation();
+  }
+
+  void centerOnFreeRunLocation() {
+    final location = locationProvider.currentLocationStream;
+
+    if (location == null || freeRunMapController == null) {
+      return;
+    }
+
+    hasCenteredOnLocation = true;
+
+    freeRunMapController!.animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(
+          target: location,
+          zoom: 18,
+        ),
+      ),
+    );
+  }
+
+  // DISTANCE RUN LOCATION
+
+  Future<void> getUserPositions() async {
+    if (mounted) {
+      setState(() {
+        isLoadingLocation = true;
+      });
+    }
+
+    try {
+      final Position position = await determinePosition();
+
+      if (!mounted) return;
+
+      final location = LatLng(
+        position.latitude,
+        position.longitude,
+      );
+
+      setState(() {
+        userLat = position.latitude;
+        userLng = position.longitude;
+        isLoadingLocation = false;
+      });
+
+      // Start continuous GPS tracking.
+      await locationProvider.getCurrentLocationStream();
+
+      if (!mounted) return;
+
+      // Use the latest provider location if available.
+      final latestLocation =
+          locationProvider.currentLocationStream ?? location;
+
+      centerOnDistanceRunLocation(latestLocation);
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        isLoadingLocation = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Unable to get location: $e'),
+        ),
+      );
+    }
+  }
+
+  // Listen to every GPS update during Distance Run.
+  void onDistanceLocationChanged() {
+    if (!mounted) return;
+
+    final currentLocation =
+        locationProvider.currentLocationStream;
+
+    if (currentLocation == null) return;
+
+    // Always follow the latest GPS position.
+    centerOnDistanceRunLocation(currentLocation);
+
+    // Recalculate the remaining route if a destination exists.
+    if (destination != null) {
+      scheduleRouteUpdate(currentLocation);
+    }
+  }
+
+  void centerOnDistanceRunLocation(LatLng location) {
+    if (distanceMapController == null) return;
+
+    distanceMapController!.animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(
+          target: location,
+          zoom: 18,
+        ),
+      ),
+    );
+  }
+
+  // LIVE REMAINING ROUTE
+
+  void scheduleRouteUpdate(LatLng currentLocation) {
+    pendingRouteLocation = currentLocation;
+
+    routeUpdateDebounce?.cancel();
+
+    routeUpdateDebounce = Timer(
+      const Duration(seconds: 1), () {
+        if (!mounted || destination == null) return;
+        final latestLocation = pendingRouteLocation;
+        if (latestLocation == null) return;
+        // Avoid unnecessary API requests for tiny movements.
+        if (lastRouteOrigin != null) {
+          final distanceMoved = Geolocator.distanceBetween(
+            lastRouteOrigin!.latitude,
+            lastRouteOrigin!.longitude,
+            latestLocation.latitude,
+            latestLocation.longitude,
+          );
+
+          if (distanceMoved < 15) return;
+        }
+
+        updateRemainingRoute(latestLocation);
+      },
+    );
+  }
+
+  Future<void> updateRemainingRoute(
+      LatLng currentLocation,
+      ) async {
+    final selectedDestination = destination;
+
+    if (selectedDestination == null) return;
+
+    // Each request gets a unique ID.
+    final requestId = ++routeRequestId;
+
+    // Remember the origin of this request.
+    lastRouteOrigin = currentLocation;
+
+    try {
+      final updatedPoints =
+      await GettingRoutePoints.getRoutePoints(
+        from: currentLocation,
+        to: selectedDestination,
+      );
+
+      if (!mounted || updatedPoints.isEmpty) return;
+
+      // Ignore old responses.
+      if (requestId != routeRequestId) return;
+
+      setState(() {
+        // Replace the old remaining route.
+        routePoints = updatedPoints;
+      });
+    } catch (e) {
+      debugPrint('Remaining route update failed: $e');
+    }
+  }
+
+  // INITIAL ROUTE FETCHING
+
+  Future<void> getRoutePoints(
+      LatLng from,
+      LatLng to,
+      ) async {
+    final requestId = ++routeRequestId;
+
+    setState(() {
+      isLoadingRoute = true;
+    });
+
+    try {
+      final points = await GettingRoutePoints.getRoutePoints(
+        from: from,
+        to: to,
+      );
+
+      if (!mounted) return;
+
+      if (requestId != routeRequestId) return;
+
+      if (points.isEmpty) {
+        setState(() {
+          isLoadingRoute = false;
+        });
+        return;
+      }
+
+      setState(() {
+        routePoints = points;
+        isLoadingRoute = false;
+      });
+
+      lastRouteOrigin = from;
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        isLoadingRoute = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Unable to fetch route: $e'),
+        ),
+      );
+    }
+  }
+
+  // DESTINATION SELECTION
+
+  Future<void> selectDestination(
+      PlacePrediction prediction,
+      ) async {
+    final placeId = prediction.placeId;
+
+    if (placeId == null) return;
+
+    try {
+      final LatLng? selectedLocation =
+      await GetLatLngFromPlaceId.getLatLng(placeId);
+
+      if (!mounted || selectedLocation == null) return;
+
+      // Use the latest GPS location, not the original location.
+      final origin = locationProvider.currentLocationStream ??
+          (userLat != null && userLng != null
+              ? LatLng(userLat!, userLng!)
+              : null);
+
+      setState(() {
+        destination = selectedLocation;
+        predictions.clear();
+        searchEnabled = false;
+        locationSearch.clear();
+
+        // Remove the previous destination's route.
+        routePoints = [];
+      });
+
+      routeUpdateDebounce?.cancel();
+      lastRouteOrigin = null;
+
+      if (origin != null) {
+        await getRoutePoints(
+          origin,
+          selectedLocation,
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Unable to select destination: $e'),
+        ),
+      );
+    }
+  }
+
+  // AUTOCOMPLETE SEARCH
+
+  void onSearchChanged(String value) {
+    searchDebounce?.cancel();
+
+    if (value.trim().isEmpty) {
+      setState(() {
+        predictions.clear();
+      });
+      return;
+    }
+
+    searchDebounce = Timer(
+      const Duration(milliseconds: 500),
+          () async {
+        try {
+          final Response response =
+          await AutoCompleteLocationService.getAddress(value);
+
+          if (!mounted) return;
+
+          if (response.statusCode == 200 ||
+              response.statusCode == 201) {
+            final responseMap = jsonDecode(response.body);
+
+            final result =
+            AutoCompleteLocationModel.fromJson(responseMap);
+
+            setState(() {
+              predictions = (result.suggestions ?? [])
+                  .map((item) => item.placePrediction)
+                  .toList();
+            });
+          }
+        } catch (e) {
+          debugPrint('Autocomplete error: $e');
+        }
+      },
+    );
+  }
+
+  void toggleSearch() {
+    setState(() {
+      searchEnabled = !searchEnabled;
+      if (!searchEnabled) {
+        locationSearch.clear();
+        predictions.clear();
+        searchDebounce?.cancel();
+      }
+    });
+  }
+
+  // DISPOSE
+
   @override
   void dispose() {
-    context.read<LocationStream>().cancelStream();
+    searchDebounce?.cancel();
+    routeUpdateDebounce?.cancel();
     locationSearch.dispose();
+    if (isFreeRun) {
+      locationProvider.removeListener(onLocationChanged);
+    } else {
+      locationProvider.removeListener(onDistanceLocationChanged);
+    }
+    // Invalidate any outstanding route requests.
+    routeRequestId++;
+    locationProvider.cancelStream();
     super.dispose();
   }
 
-  //getting the user location
-  Future<void> getUserPositions() async{
-    isLoading = true;
-    Position position = await determinePosition();
-    isLoading = false;
-    setState(() {
-      userLat = position.latitude;
-      userLng = position.longitude;
-    });
-  }
-
-  // calling get route points function
-  Future<void> getRoutePoints(LatLng from, LatLng to) async{
-    isLoading = true;
-    final points = await GettingRoutePoints.getRoutePoints(from: from, to: to);
-    isLoading = false;
-    setState(() {
-      routePoints = points;
-    });
-  }
+  // BUILD
 
   @override
   Widget build(BuildContext context) {
-    //if user selects free run
-    if(widget.mode.contains(ModeEnum.freeRun)){
-      return Scaffold(
-        backgroundColor: Colors.black,
-        body: Consumer<LocationStream>(
-          builder: (_, provider, _) {
-
-            //get the polyline
-            final polyline = provider.getPolyline;
-            final userLocation = provider.currentLocationStream;
-            if (userLocation == null || polyline == null || userLat == null || userLng == null) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-
-            if(provider.getSpeed == 0 && provider.totalDistance != 0 && provider.totalMinutes != 0){
-              Popup.showPopUp(context);
-            }
-
-            //changing the camera position to the new position of user
-            _controller?.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-              target: userLocation,
-              zoom: 18
-            )));
-
-            return Stack(
-              alignment: AlignmentGeometry.bottomCenter,
-              children: [
-                GoogleMap(
-                  mapType: MapType.hybrid,
-                  zoomGesturesEnabled: true,
-                  zoomControlsEnabled: true,
-                  myLocationButtonEnabled: false,
-                  myLocationEnabled: true,
-                  compassEnabled: true,
-                  initialCameraPosition: CameraPosition(
-                    target: userLocation,
-                    zoom: 18,
-                  ),
-                  markers: {
-                    //initial marker
-                    Marker(
-                      markerId: MarkerId("initial"),
-                      position: LatLng(userLat!, userLng!),
-                      icon: BitmapDescriptor.defaultMarker,
-                    ),
-                  },
-                  polylines: {
-                    polyline
-                  },
-                  onMapCreated: (controller) {
-                    _controller = controller;
-                  },
-                ),
-                // here calling running dashboard
-                RunnigDashboard(distance: provider.totalDistance, speed: provider.getSpeed,
-                  duration: provider.totalMinutes, pace: provider.getPace,),
-                //update the camera to current location
-                Positioned(
-                  bottom: 270,
-                  right: 15,
-                  child: CircleAvatar(
-                    maxRadius: 25,
-                    backgroundColor: Color(ColorConstraints.backGroundColor),
-                    child: IconButton(
-                      onPressed: () {
-                        _controller?.animateCamera(
-                          CameraUpdate.newCameraPosition(
-                            CameraPosition(
-                              target: userLocation,
-                              zoom: 18
-                            )
-                          )
-                        );
-                      },
-                      icon: Icon(Icons.location_searching, color: Color(ColorConstraints.buttonColor), size: 25,),
-                    ),
-                  )
-                )
-              ],
-            );
-          },
-        ),
-      );
-    } else {
-      return Scaffold(
-        backgroundColor: Colors.black,
-        appBar: distanceAppBar(context),
-        body: Stack(
-          alignment: AlignmentGeometry.bottomCenter,
-          children: [
-            // here will be selected location map
-            isLoading ? const Center(
-              child: CircularProgressIndicator(),
-            ) : (userLat == null ||
-                userLng == null) ? const Center(child: Text(
-                "Getting no data",
-                style: TextStyle(color: Colors.white),
-              ),
-            ): GoogleMap(
-              mapType: MapType.hybrid,
-              compassEnabled: true,
-              zoomControlsEnabled: true,
-              myLocationButtonEnabled: true,
-              myLocationEnabled: true,
-              initialCameraPosition: CameraPosition(
-                target: LatLng(userLat!, userLng!),
-                zoom: 18,
-              ),
-              onMapCreated: (controller) {
-                distanceMapController = controller;
-              },
-              markers: {
-                if(widget.toLatLng != null)
-                  Marker(
-                      markerId: MarkerId("to"),
-                      position: widget.toLatLng!,
-                      icon: BitmapDescriptor.defaultMarker
-                  ),
-              },
-              polylines: {
-                Polyline(
-                  polylineId: PolylineId("route"),
-                  color: Color(ColorConstraints.buttonColor),
-                  width: 7,
-                  visible: true,
-                  points: routePoints
-                )
-              },
-            ),
-            // here calling running dashboard
-            RunnigDashboard(),
-            Positioned(
-              child: Visibility(
-                visible: prediction.isNotEmpty,
-                child: Expanded(
-                  child: ListView.builder(
-                    itemCount: prediction.length,
-                    itemBuilder: (context, index) {
-                      return Container(
-                        decoration: BoxDecoration(
-                          color: Color(ColorConstraints.splashBackground_0),
-                        ),
-                        child: ListTile(
-                          onTap: () async {
-                            locationSearch.text = "${prediction[index].text?.text}";
-                            // here is fetching latLng against placeID for to
-                            widget.toLatLng = await GetLatLngFromPlaceId.getLatLng(prediction[index].placeId!);
-                            getRoutePoints(LatLng(userLat!, userLng!), widget.toLatLng!);
-                            //print("to lat lng: ${widget.toLatLng}");
-                            // updating the state and predictedPlaces
-                            setState(() {
-                              prediction.clear();
-                              searchEnable = false;
-                              locationSearch.clear();
-                            });
-                          },
-                          leading: Icon(Icons.location_on_sharp, color: Color(ColorConstraints.headLineFontColor),),
-                          title: Text("${prediction[index].text?.text}", style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                              color: Color(ColorConstraints.headLineFontColor)
-                          ),),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+    if (isFreeRun) {
+      return FreeRunMapView(
+        onMapCreated: (controller) {
+          freeRunMapController = controller;
+          centerOnFreeRunLocation();
+        },
+        onRecenter: () {
+          hasCenteredOnLocation = false;
+          centerOnFreeRunLocation();
+        },
       );
     }
-  }
 
-  // distance mode app bar
-  AppBar distanceAppBar(BuildContext context) {
-    return AppBar(
-        backgroundColor: Color(ColorConstraints.splashBackground_0),
-        elevation: 3,
-        title: Row(
-          spacing: 20,
-          children: [
-            Text("Runner", style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-                color: Color(ColorConstraints.buttonColor),
-                fontWeight: FontWeight.w800
-            ),),
-            Visibility(
-              visible: searchEnable,
-              child: Expanded(child: TextFormField(
-                controller: locationSearch,
-                autofocus: true,
-                onChanged: (value) async{
+    return Scaffold(
+      backgroundColor: Colors.black,
 
-                  if(_timer?.isActive ?? false){
-                    _timer?.cancel();
-                  }
+      appBar: DistanceRunAppBar(
+        searchEnabled: searchEnabled,
+        controller: locationSearch,
+        onSearchChanged: onSearchChanged,
+        onSearchToggle: toggleSearch,
+      ),
 
-                  if (value.isEmpty) {
-                    setState(() {
-                      prediction.clear();
-                    });
-                    return;
-                  }
+      body: Stack(
+        children: [
+          DistanceRunMapView(
+            initialLocation:
+            locationProvider.currentLocationStream ??
+                (userLat != null && userLng != null
+                    ? LatLng(userLat!, userLng!)
+                    : null),
 
-                  _timer = Timer(Duration(milliseconds: 500), () async {
-                    Response response = await AutoCompleteLocationService.getAddress(value);
-                    if(response.statusCode == 200 || response.statusCode == 201){
-                      final responseMap = jsonDecode(response.body);
-                      final autoCompleteLocations = AutoCompleteLocationModel.fromJson(responseMap);
-                      prediction.clear();
-                      for(final suggestions in autoCompleteLocations.suggestions ?? []){
-                        prediction.add(suggestions.placePrediction);
-                      }
-                      setState(() {});
+            destination: destination,
+            routePoints: routePoints,
+            isLoadingLocation: isLoadingLocation,
+            isLoadingRoute: isLoadingRoute,
 
-                      // debug print
-                      //print(predictedPlaces[0].text?.text);
-                    }
-                  },);
+            onMapCreated: (controller) {
+              distanceMapController = controller;
 
-                },
-                onTapOutside: (event) {
-                  locationSearch.clear();
-                  setState(() {
-                    searchEnable = false;
-                  });
-                },
-                cursorColor: Color(ColorConstraints.buttonColor),
-                style: TextStyle(
-                  color: Color(ColorConstraints.buttonColor),
-                  fontSize: 17
-                ),
-                decoration: InputDecoration(
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide.none
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide.none
-                  ),
-                  hint: Text("Search destination location", style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                    color: Colors.white30
-                  ),),
-                ),
-              ))
-            )
-          ],
-        ),
-        automaticallyImplyLeading: false,
-        actions: [
-          Visibility(
-            visible: !searchEnable,
-            child: IconButton(
-              onPressed: () {
-                setState(() {
-                  searchEnable = true;
-                });
-              },
-              icon: Icon(Icons.search, color: Color(ColorConstraints.buttonColor), size: 25,),
-            )
+              // Center on the latest location when the map is ready.
+              final currentLocation =
+                  locationProvider.currentLocationStream;
+
+              if (currentLocation != null) {
+                centerOnDistanceRunLocation(currentLocation);
+              } else if (userLat != null && userLng != null) {
+                centerOnDistanceRunLocation(
+                  LatLng(userLat!, userLng!),
+                );
+              }
+            },
+          ),
+
+          DestinationSearchList(
+            predictions: predictions,
+            onDestinationSelected: selectDestination,
           ),
         ],
-        actionsPadding: const EdgeInsets.only(right: 8),
-      );
+      ),
+    );
   }
 }
