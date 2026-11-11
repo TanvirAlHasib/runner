@@ -99,8 +99,7 @@ class _RunCompletePreviewState extends State<RunCompletePreview> {
                   onPressed: () {
                     //canceling the location stream
                     context.read<LocationStream>().cancelStream();
-                    // navigating to the home
-                    StatefulNavigationShell.of(context).goBranch(1, initialLocation: true);
+                    // navigating to the home screen
                     context.goNamed("home");
                   },
                   style: FilledButton.styleFrom(
@@ -133,7 +132,6 @@ class _RunCompletePreviewState extends State<RunCompletePreview> {
                         "duration": widget.runDetailsModel.duration
                       });
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Data saved successfully!!")));
-                      StatefulNavigationShell.of(context).goBranch(1, initialLocation: true);
                       context.goNamed("home");
                     } on FirebaseException catch (e){
                       setState(() {
@@ -143,6 +141,8 @@ class _RunCompletePreviewState extends State<RunCompletePreview> {
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message!)));
                       }
                     } finally{
+                      //canceling the location stream
+                      context.read<LocationStream>().cancelStream();
                       setState(() {
                         isLoading = false;
                       });
