@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:runner/constraints/color_constraints.dart';
 import 'package:runner/models/run_details_model.dart';
 import 'package:runner/screens/home_screen.dart';
+import 'package:runner/screens/map_screen.dart';
 import 'package:runner/screens/run_complete_preview.dart';
 import 'package:runner/screens/run_screen.dart';
 import 'package:runner/screens/splash_screen.dart';
@@ -38,14 +39,25 @@ final GoRouter router = GoRouter(
               name: "run",
               builder: (context, state) => RunScreen(),
               routes: [
+
                 GoRoute(
-                  path: "preview",
-                  name: "preview",
+                  path: "map",
+                  name: "map",
                   builder: (context, state) {
-                    final runDetails = state.extra as RunDetailsModel;
-                    return RunCompletePreview(runDetailsModel: runDetails);
+                    final mode = state.extra as String;
+                    return MapScreen(mode: mode);
                   },
-                ),
+                  routes: [
+                    GoRoute(
+                      path: "preview",
+                      name: "preview",
+                      builder: (context, state) {
+                        final runDetails = state.extra as RunDetailsModel;
+                        return RunCompletePreview(runDetailsModel: runDetails);
+                      },
+                    ),
+                  ]
+                )
               ]
             )
           ]
