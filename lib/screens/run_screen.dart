@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:runner/constraints/mode_enum.dart';
 import 'package:runner/screens/map_screen.dart';
@@ -146,9 +147,9 @@ class _RunScreenState extends State<RunScreen> {
               ElevatedButton(
                 onPressed: () {
                   if(flagRun){
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => MapScreen(mode: ModeEnum.freeRun,),));
+                    context.goNamed("map", extra: ModeEnum.freeRun);
                   } else if(flagDistance){
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => MapScreen(mode: ModeEnum.distanceRun,),));
+                    context.goNamed("map", extra: ModeEnum.distanceRun);
                   }
                 },
                 style: ElevatedButton.styleFrom(

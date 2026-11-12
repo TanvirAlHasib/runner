@@ -100,7 +100,7 @@ class _RunCompletePreviewState extends State<RunCompletePreview> {
                     //canceling the location stream
                     context.read<LocationStream>().cancelStream();
                     // navigating to the home screen
-                    context.goNamed("home");
+                    StatefulNavigationShell.of(context).goBranch(1, initialLocation: true,);
                   },
                   style: FilledButton.styleFrom(
                       minimumSize: Size.fromHeight(50),
@@ -123,7 +123,7 @@ class _RunCompletePreviewState extends State<RunCompletePreview> {
                       setState(() {
                         isLoading = true;
                       });
-                      await _firebaseFirestore.collection(FirebaseConstants.collectionName).doc("user_gmail")
+                      _firebaseFirestore.collection(FirebaseConstants.collectionName).doc("user_gmail")
                           .collection(FirebaseConstants.history).add({
                         "title": widget.runDetailsModel.title,
                         "distance": widget.runDetailsModel.distance,
@@ -132,7 +132,7 @@ class _RunCompletePreviewState extends State<RunCompletePreview> {
                         "duration": widget.runDetailsModel.duration
                       });
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Data saved successfully!!")));
-                      context.goNamed("home");
+                      StatefulNavigationShell.of(context).goBranch(1, initialLocation: true,);
                     } on FirebaseException catch (e){
                       setState(() {
                         isLoading = false;

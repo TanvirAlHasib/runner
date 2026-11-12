@@ -67,8 +67,7 @@ class _MapScreenState extends State<MapScreen> {
 
   int routeRequestId = 0;
 
-  bool get isFreeRun =>
-      widget.mode.contains(ModeEnum.freeRun);
+  bool get isFreeRun => widget.mode.contains(ModeEnum.freeRun);
 
   @override
   void initState() {
