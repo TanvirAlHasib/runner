@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 import 'package:runner/constraints/color_constraints.dart';
 
@@ -280,7 +281,9 @@ class _HomeScreenState extends State<HomeScreen> {
       automaticallyImplyLeading: false,
       actions: [
         IconButton(
-          onPressed: () {},
+          onPressed: () {
+            context.pushNamed("notification");
+          },
           icon: Icon(Icons.notifications_none, color: Color(ColorConstraints.buttonColor)),
         )
       ],

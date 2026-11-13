@@ -4,6 +4,7 @@ import 'package:runner/constraints/color_constraints.dart';
 import 'package:runner/models/run_details_model.dart';
 import 'package:runner/screens/home_screen.dart';
 import 'package:runner/screens/map_screen.dart';
+import 'package:runner/screens/notification_screen.dart';
 import 'package:runner/screens/run_complete_preview.dart';
 import 'package:runner/screens/run_screen.dart';
 import 'package:runner/screens/splash_screen.dart';
@@ -16,6 +17,12 @@ final GoRouter router = GoRouter(
       path: "/",
       name: "splash",
       builder: (context, state) => SplashScreen(),
+    ),
+    // for notification screen
+    GoRoute(
+      path: "/notification",
+      name: "notification",
+      builder: (context, state) => NotificationScreen(),
     ),
     // for stateful bottom navigation
     StatefulShellRoute.indexedStack(
