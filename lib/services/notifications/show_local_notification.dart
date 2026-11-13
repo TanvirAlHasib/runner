@@ -10,6 +10,7 @@ class ShowLocalNotification {
       id: 100,
       title: title,
       body: body,
+      payload: NotificationConstants.screenToOpen,
       notificationDetails: NotificationDetails(
         android: AndroidNotificationDetails(
           NotificationConstants.channelID,
