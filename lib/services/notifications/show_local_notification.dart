@@ -5,7 +5,7 @@ class ShowLocalNotification {
   static final FlutterLocalNotificationsPlugin notificationsPlugin = FlutterLocalNotificationsPlugin();
 
   // show local notification
-  Future<void> showLocalNotification({required String title, required String body}) async{
+  static Future<void> showLocalNotification({required String title, required String body}) async{
     await notificationsPlugin.show(
       id: 100,
       title: title,

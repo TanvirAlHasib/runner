@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:runner/models/run_details_model.dart';
 import '../constraints/color_constraints.dart';
+import '../services/notifications/show_local_notification.dart';
 
 class RunnigDashboard extends StatelessWidget {
   const new({
@@ -171,6 +172,12 @@ class RunnigDashboard extends StatelessWidget {
                       );
                       // navigate to the preview screen
                       context.goNamed("preview", extra: runDetails);
+                      // show a notification
+                      ShowLocalNotification.showLocalNotification(
+                        title: "Run Completed",
+                        body:
+                        "Great job! You ran ${distance?.toStringAsFixed(2)} km in $duration minutes.",
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       minimumSize: Size.fromHeight(50),
