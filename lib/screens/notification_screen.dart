@@ -1,6 +1,7 @@
-
 import 'package:flutter/material.dart';
 import 'package:runner/constraints/color_constraints.dart';
+import 'package:runner/widgets/notification/notification_tile.dart';
+import 'package:runner/widgets/notification/section_title.dart';
 
 class NotificationScreen extends StatelessWidget {
   const NotificationScreen({super.key});
@@ -51,9 +52,9 @@ class NotificationScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          _sectionTitle('Today', primaryText),
+          SectionTitle(title: 'All', color: primaryText,),
 
-          _notificationTile(
+          NotificationTile(
             icon: Icons.emoji_events_rounded,
             iconColor: accent,
             title: 'New Achievement!',
@@ -63,7 +64,7 @@ class NotificationScreen extends StatelessWidget {
             isUnread: true,
           ),
 
-          _notificationTile(
+          NotificationTile(
             icon: Icons.directions_run_rounded,
             iconColor: accent,
             title: 'Run Completed',
@@ -72,11 +73,7 @@ class NotificationScreen extends StatelessWidget {
             isUnread: true,
           ),
 
-          const SizedBox(height: 24),
-
-          _sectionTitle('Yesterday', primaryText),
-
-          _notificationTile(
+          NotificationTile(
             icon: Icons.notifications_active_rounded,
             iconColor: Colors.blueAccent,
             title: 'Daily Reminder',
@@ -84,140 +81,6 @@ class NotificationScreen extends StatelessWidget {
             'Time to put on your shoes and go for a run!',
             time: '08:00 AM',
             isUnread: false,
-          ),
-
-          _notificationTile(
-            icon: Icons.flag_rounded,
-            iconColor: Colors.greenAccent,
-            title: 'Goal Achieved',
-            message:
-            'You reached your weekly running target.',
-            time: '06:45 PM',
-            isUnread: false,
-          ),
-
-          const SizedBox(height: 24),
-
-          _sectionTitle('Earlier', primaryText),
-
-          _notificationTile(
-            icon: Icons.favorite_rounded,
-            iconColor: Colors.redAccent,
-            title: 'Keep Going!',
-            message:
-            'Consistency is the key. Keep up your progress!',
-            time: 'Nov 10',
-            isUnread: false,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _sectionTitle(String title, Color color) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
-      child: Text(
-        title,
-        style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          color: color,
-        ),
-      ),
-    );
-  }
-
-  Widget _notificationTile({
-    required IconData icon,
-    required Color iconColor,
-    required String title,
-    required String message,
-    required String time,
-    required bool isUnread,
-  }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: cardColor,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: isUnread
-              ? accent.withValues(alpha: 0.35)
-              : Colors.white.withValues(alpha: 0.04),
-        ),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            height: 46,
-            width: 46,
-            decoration: BoxDecoration(
-              color: iconColor.withValues(alpha: 0.13),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Icon(
-              icon,
-              color: iconColor,
-              size: 23,
-            ),
-          ),
-
-          const SizedBox(width: 13),
-
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        title,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          color: primaryText,
-                        ),
-                      ),
-                    ),
-
-                    if (isUnread)
-                      Container(
-                        height: 8,
-                        width: 8,
-                        decoration: BoxDecoration(
-                          color: accent,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                  ],
-                ),
-
-                const SizedBox(height: 7),
-
-                Text(
-                  message,
-                  style: TextStyle(
-                    fontSize: 12,
-                    height: 1.5,
-                    color: secondaryText,
-                  ),
-                ),
-
-                const SizedBox(height: 10),
-
-                Text(
-                  time,
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: secondaryText.withValues(alpha: 0.75),
-                  ),
-                ),
-              ],
-            ),
           ),
         ],
       ),
