@@ -3,9 +3,14 @@ import 'package:runner/constraints/color_constraints.dart';
 import 'package:runner/widgets/notification/notification_tile.dart';
 import 'package:runner/widgets/notification/section_title.dart';
 
-class NotificationScreen extends StatelessWidget {
+class NotificationScreen extends StatefulWidget {
   const NotificationScreen({super.key});
 
+  @override
+  State<NotificationScreen> createState() => _NotificationScreenState();
+}
+
+class _NotificationScreenState extends State<NotificationScreen> {
   Color get background => Color(ColorConstraints.splashBackground_0);
   Color get cardColor => Color(ColorConstraints.backGroundColor);
   Color get accent => Color(ColorConstraints.buttonColor);
@@ -23,14 +28,14 @@ class NotificationScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
           icon: Icon(
             Icons.arrow_back_ios_new,
-            color: Color(ColorConstraints.buttonColor),
+            color: accent,
             size: 20,
           ),
         ),
         title: Text(
           'Notifications',
           style: TextStyle(
-            color: Color(ColorConstraints.buttonColor),
+            color: accent,
             fontWeight: FontWeight.bold,
             fontSize: 21,
           ),
@@ -52,7 +57,24 @@ class NotificationScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          SectionTitle(title: 'All', color: primaryText,),
+          Row(
+            mainAxisAlignment: .spaceBetween,
+            children: [
+              SectionTitle(
+                title: 'All',
+                color: primaryText,
+              ),
+              InkWell(
+                onTap: () {
+
+                },
+                child: SectionTitle(
+                  title: 'Check All Read',
+                  color: primaryText,
+                ),
+              ),
+            ],
+          ),
 
           NotificationTile(
             icon: Icons.emoji_events_rounded,
@@ -77,8 +99,7 @@ class NotificationScreen extends StatelessWidget {
             icon: Icons.notifications_active_rounded,
             iconColor: Colors.blueAccent,
             title: 'Daily Reminder',
-            message:
-            'Time to put on your shoes and go for a run!',
+            message: 'Time to put on your shoes and go for a run!',
             time: '08:00 AM',
             isUnread: false,
           ),
