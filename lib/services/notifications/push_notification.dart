@@ -49,8 +49,12 @@ class PushNotification {
   // instead FCM because that is deprecated
   static Future<void> getFIDToken() async{
     String? FID;
-    _messaging.onRegistered.listen((String id) {
+    _messaging.onRegistered.listen((String id) async {
       FID = id;
+      await _firebaseFirestore.collection(FirebaseConstants.collectionName).doc("user_gmail")
+      .collection(FirebaseConstants.fidCollection).add({
+        "FID": FID
+      });
       debugPrint("FCM: $FID");
     },);
 
