@@ -1,5 +1,6 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:runner/services/notifications/show_local_notification.dart';
 
 class PushNotification {
   static final FirebaseMessaging _messaging = FirebaseMessaging.instance;
@@ -23,6 +24,10 @@ class PushNotification {
   static void getMessage() {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       foreGroundMessage.value = [...foreGroundMessage.value, message];
+      ShowLocalNotification.showLocalNotification(
+        title: message.notification?.title ?? "New Notification",
+        body: message.notification?.body ?? "You received a new message"
+      );
     },);
     debugPrint("Message: ${foreGroundMessage.value.length}");
   }
