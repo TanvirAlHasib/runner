@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:runner/routes/app_routes.dart';
 import 'package:runner/provider/location_stream.dart';
 import 'package:runner/services/notifications/local_notification_helper.dart';
+import 'package:runner/services/notifications/push_notification.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
@@ -14,6 +15,8 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  //  for push notification
+  await PushNotification.init();
   runApp(
     MultiProvider(providers: [
       ChangeNotifierProvider(create: (context) => LocationStream(),)
