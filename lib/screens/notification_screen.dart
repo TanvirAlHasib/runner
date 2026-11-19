@@ -1,5 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:runner/constraints/color_constraints.dart';
+import 'package:runner/constraints/firebase_constants.dart';
+import 'package:runner/utils/toast.dart';
 import 'package:runner/widgets/notification/notification_tile.dart';
 import 'package:runner/widgets/notification/section_title.dart';
 
@@ -16,6 +20,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
   Color get accent => Color(ColorConstraints.buttonColor);
   Color get primaryText => Color(ColorConstraints.headLineFontColor);
   Color get secondaryText => Color(ColorConstraints.bodyFontColor);
+  final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -54,56 +59,83 @@ class _NotificationScreenState extends State<NotificationScreen> {
           const SizedBox(width: 8),
         ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(20),
-        children: [
-          Row(
-            mainAxisAlignment: .spaceBetween,
-            children: [
-              SectionTitle(
-                title: 'All',
-                color: primaryText,
-              ),
-              InkWell(
-                onTap: () {
-
-                },
-                child: SectionTitle(
-                  title: 'Check All Read',
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: .spaceBetween,
+              children: [
+                SectionTitle(
+                  title: 'All',
                   color: primaryText,
                 ),
+                InkWell(
+                  onTap: () {
+
+                  },
+                  child: SectionTitle(
+                    title: 'Check All Read',
+                    color: primaryText,
+                  ),
+                ),
+              ],
+            ),
+            Expanded(
+              child: StreamBuilder(
+                stream: _firebaseFirestore.collection(FirebaseConstants.collectionName)
+                    .doc("user_gmail").collection(FirebaseConstants.notificationCollection).snapshots(),
+                builder: (context, snapshot) {
+
+                  if(snapshot.connectionState == ConnectionState.waiting){
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+
+                  if(snapshot.hasError){
+                    return Center(
+                      child: Text("Error!!", style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: Color(ColorConstraints.bodyFontColor)
+                      ),),
+                    );
+                  }
+
+                  if(snapshot.hasData && snapshot.data == null){
+                    return Center(
+                      child: Text("No Notifications!!", style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: Color(ColorConstraints.bodyFontColor)
+                      ),),
+                    );
+                  }
+
+                  final data = snapshot.data?.docs;
+                  return ListView.builder(
+                    itemCount: data?.length,
+                    itemBuilder: (context, index) {
+
+                      final notification = data?[index].data();
+
+                      final createdAt = notification!['createdAt'];
+                      final formattedDate = DateFormat('dd MMM yyyy').format(createdAt.toDate(),);
+                      return NotificationTile(
+                        icon: Icons.directions_run_rounded,
+                        iconColor: accent,
+                        title: notification["title"],
+                        message: notification["message"],
+                        time: formattedDate,
+                        isUnread: notification["isUnread"],
+                      );
+                    },
+                  );
+
+                },
               ),
-            ],
-          ),
-
-          NotificationTile(
-            icon: Icons.emoji_events_rounded,
-            iconColor: accent,
-            title: 'New Achievement!',
-            message:
-            'Congratulations! You completed your 5 km running goal.',
-            time: '10:30 AM',
-            isUnread: true,
-          ),
-
-          NotificationTile(
-            icon: Icons.directions_run_rounded,
-            iconColor: accent,
-            title: 'Run Completed',
-            message: 'Great job! You ran 3.5 km in 25 minutes.',
-            time: '09:15 AM',
-            isUnread: true,
-          ),
-
-          NotificationTile(
-            icon: Icons.notifications_active_rounded,
-            iconColor: Colors.blueAccent,
-            title: 'Daily Reminder',
-            message: 'Time to put on your shoes and go for a run!',
-            time: '08:00 AM',
-            isUnread: false,
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }
