@@ -21,6 +21,23 @@ class _NotificationScreenState extends State<NotificationScreen> {
   Color get secondaryText => Color(ColorConstraints.bodyFontColor);
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
 
+  // marking all notifications read.
+  Future<void> markAllNotificationsAsRead() async {
+    final snapshot = await _firebaseFirestore
+        .collection(FirebaseConstants.collectionName)
+        .doc("user_gmail")
+        .collection(FirebaseConstants.notificationCollection)
+        .where("isUnread", isEqualTo: true)
+        .get();
+
+    final batch = _firebaseFirestore.batch();
+    for(final doc in snapshot.docs){
+      batch.update(doc.reference, {"isUnread": false});
+    }
+
+    await batch.commit();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,9 +87,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   color: primaryText,
                 ),
                 InkWell(
-                  onTap: () {
-
-                  },
+                  onTap: () => markAllNotificationsAsRead(),
                   child: SectionTitle(
                     title: 'Check All Read',
                     color: primaryText,
