@@ -4,8 +4,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:runner/constraints/mode_enum.dart';
-import 'package:runner/screens/map_screen.dart';
 import 'package:runner/services/get_location.dart';
+import 'package:runner/widgets/my_app_bar.dart';
 import '../constraints/color_constraints.dart';
 
 class RunScreen extends StatefulWidget {
@@ -36,7 +36,7 @@ class _RunScreenState extends State<RunScreen> {
     getPosition();
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: myAppBar(context),
+      appBar: MyAppBar(),
       body: SafeArea(
         child: Container(
           padding: const EdgeInsets.only(top: 13, left: 12, right: 12, bottom: 5),
@@ -166,26 +166,6 @@ class _RunScreenState extends State<RunScreen> {
           ),
         ),
       ),
-    );
-  }
-
-  // app bar code
-  AppBar myAppBar(BuildContext context) {
-    return AppBar(
-      backgroundColor: Color(ColorConstraints.splashBackground_0),
-      elevation: 3,
-      title: Text("Runner", style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-          color: Color(ColorConstraints.buttonColor),
-          fontWeight: FontWeight.w800
-      ),),
-      automaticallyImplyLeading: false,
-      actions: [
-        IconButton(
-          onPressed: () {},
-          icon: Icon(Icons.notifications_none, color: Color(ColorConstraints.buttonColor)),
-        )
-      ],
-      actionsPadding: const EdgeInsets.only(right: 8),
     );
   }
 

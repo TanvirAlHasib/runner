@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:runner/constraints/color_constraints.dart';
 import 'package:runner/constraints/firebase_constants.dart';
+import 'package:runner/widgets/my_app_bar.dart';
 import '../widgets/home_custom_scroll_view.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -18,7 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(ColorConstraints.splashBackground_0),
-      appBar: myAppBar(context),
+      appBar: MyAppBar(),
       body: Container(
         padding: const EdgeInsets.only(top: 13, left: 12, right: 12, bottom: 5),
         child: Column(
@@ -79,28 +79,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
-    );
-  }
-
-  // app bar code
-  AppBar myAppBar(BuildContext context) {
-    return AppBar(
-      backgroundColor: Color(ColorConstraints.splashBackground_0),
-      elevation: 3,
-      title: Text("Runner", style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-        color: Color(ColorConstraints.buttonColor),
-        fontWeight: FontWeight.w800
-      ),),
-      automaticallyImplyLeading: false,
-      actions: [
-        IconButton(
-          onPressed: () {
-            context.pushNamed("notification");
-          },
-          icon: Icon(Icons.notifications_none, color: Color(ColorConstraints.buttonColor)),
-        )
-      ],
-      actionsPadding: const EdgeInsets.only(right: 8),
     );
   }
 }
