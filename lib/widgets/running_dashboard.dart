@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:runner/models/run_details_model.dart';
+import 'package:runner/utils/toast.dart';
 import '../constraints/color_constraints.dart';
 import '../services/notifications/show_local_notification.dart';
 
@@ -164,6 +165,12 @@ class RunnigDashboard extends StatelessWidget {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
+
+                      if(distance == 0){
+                        Toast.showMessage(body: "At least run 1 KM", context: context);
+                        return;
+                      }
+
                       RunDetailsModel runDetails = RunDetailsModel(
                         distance: distance!,
                         pace: pace!,
