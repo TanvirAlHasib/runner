@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:runner/constraints/color_constraints.dart';
 import 'package:runner/constraints/firebase_constants.dart';
-import 'package:runner/utils/toast.dart';
 import 'package:runner/widgets/notification/notification_tile.dart';
 import 'package:runner/widgets/notification/section_title.dart';
 
