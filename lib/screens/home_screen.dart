@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lottie/lottie.dart';
 import 'package:runner/constraints/color_constraints.dart';
 import 'package:runner/constraints/firebase_constants.dart';
 import '../widgets/chart.dart';
+import '../widgets/home_recent_runs.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -56,6 +56,22 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                   }
 
+                  // getting the data
+                  final data = snapshot.data?.docs;
+                  // getting total runs of the week
+                  final totalRun = data?.length;
+                  // getting total time and avg pace
+                  double avgPace = 0;
+                  double totalTime = 0;
+                  double totalDistance = 0;
+                  for(final element in data!){
+                    final eachData = element.data();
+                    avgPace = avgPace + eachData["pace"];
+                    totalTime = totalTime + eachData["duration"];
+                    totalDistance = totalDistance + eachData["distance"];
+                  }
+                  avgPace = avgPace / totalRun!;
+
                   return CustomScrollView(
                     slivers: [
                       SliverToBoxAdapter(
@@ -98,24 +114,24 @@ class _HomeScreenState extends State<HomeScreen> {
                                 height: 2,
                               ),
                               Text.rich(TextSpan(
-                                  text: "24.3",
-                                  style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-                                      color: Color(ColorConstraints.buttonColor),
-                                      fontWeight: FontWeight.w700
-                                  ),
-                                  children: [
-                                    WidgetSpan(child: const SizedBox(
-                                      width: 5,
-                                    )),
-                                    TextSpan(
-                                        text: "KM",
-                                        style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-                                            color: Color(ColorConstraints.buttonColor),
-                                            fontWeight: FontWeight.w700,
-                                            fontSize: 23
-                                        )
+                                text: totalDistance.toStringAsFixed(2),
+                                style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                                    color: Color(ColorConstraints.buttonColor),
+                                    fontWeight: FontWeight.w700
+                                ),
+                                children: [
+                                  WidgetSpan(child: const SizedBox(
+                                    width: 5,
+                                  )),
+                                  TextSpan(
+                                    text: "KM",
+                                    style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                                        color: Color(ColorConstraints.buttonColor),
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 23
                                     )
-                                  ]
+                                  )
+                                ]
                               )),
                               const SizedBox(
                                 height: 12,
@@ -132,7 +148,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       const SizedBox(
                                         height: 2,
                                       ),
-                                      Text("3", style: Theme.of(context).textTheme.headlineSmall!.copyWith(
+                                      Text(totalRun.toString(), style: Theme.of(context).textTheme.headlineSmall!.copyWith(
                                           color: Color(ColorConstraints.headLineFontColor),
                                           fontWeight: FontWeight.w700,
                                           fontSize: 21
@@ -148,7 +164,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       const SizedBox(
                                         height: 2,
                                       ),
-                                      Text("2h 14m", style: Theme.of(context).textTheme.headlineSmall!.copyWith(
+                                      Text(totalTime.toString(), style: Theme.of(context).textTheme.headlineSmall!.copyWith(
                                           color: Color(ColorConstraints.headLineFontColor),
                                           fontWeight: FontWeight.w700,
                                           fontSize: 21
@@ -164,7 +180,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       const SizedBox(
                                         height: 2,
                                       ),
-                                      Text("5:42", style: Theme.of(context).textTheme.headlineSmall!.copyWith(
+                                      Text(avgPace.toStringAsFixed(2), style: Theme.of(context).textTheme.headlineSmall!.copyWith(
                                           color: Color(ColorConstraints.headLineFontColor),
                                           fontWeight: FontWeight.w700,
                                           fontSize: 21
@@ -178,7 +194,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               const SizedBox(
                                 height: 30,
                               ),
-                              Chart(),
+                              Chart(snapshot: data,),
                             ],
                           ),
                         ),
@@ -199,91 +215,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           height: 15,
                         ),
                       ),
-                      SliverList.builder(
-                        itemCount: 3,
-                        itemBuilder: (context, index) {
-                          return Column(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(7),
-                                  decoration: BoxDecoration(
-                                      color: Color(ColorConstraints.backGroundColor),
-                                      borderRadius: BorderRadius.circular(8)
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Lottie.asset("lib/assets/animations/walking_avocado.json", height: 100),
-                                      Expanded(
-                                        child: ListTile(
-                                          title: Row(
-                                            mainAxisAlignment: .spaceBetween,
-                                            children: [
-                                              Text("Morning city", style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                                                  color: Color(ColorConstraints.headLineFontColor),
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.w600
-                                              ),),
-                                              Text("Toady", style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                                                  color: Color(ColorConstraints.bodyFontColor),
-                                                  fontWeight: FontWeight.w600
-                                              ),),
-
-                                            ],
-                                          ),
-                                          subtitle: Row(
-                                            mainAxisAlignment: .spaceBetween,
-                                            children: [
-                                              Column(
-                                                children: [
-                                                  const SizedBox(
-                                                    height: 7,
-                                                  ),
-                                                  Text("Distance", style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                                                      color: Color(ColorConstraints.bodyFontColor),
-                                                      fontWeight: FontWeight.w800
-                                                  ),),
-                                                  const SizedBox(
-                                                    height: 2,
-                                                  ),
-                                                  Text("3", style: Theme.of(context).textTheme.headlineSmall!.copyWith(
-                                                      color: Color(ColorConstraints.headLineFontColor),
-                                                      fontWeight: FontWeight.w700,
-                                                      fontSize: 19
-                                                  ),)
-                                                ],
-                                              ),
-                                              Column(
-                                                children: [
-                                                  const SizedBox(
-                                                    height: 7,
-                                                  ),
-                                                  Text("Pace", style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                                                      color: Color(ColorConstraints.bodyFontColor),
-                                                      fontWeight: FontWeight.w800
-                                                  ),),
-                                                  const SizedBox(
-                                                    height: 2,
-                                                  ),
-                                                  Text("5.30 /KM", style: Theme.of(context).textTheme.headlineSmall!.copyWith(
-                                                      color: Color(ColorConstraints.headLineFontColor),
-                                                      fontWeight: FontWeight.w700,
-                                                      fontSize: 19
-                                                  ),)
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(
-                                  height: 5,
-                                )
-                              ]
-                          );
-                        },)
+                      HomeRecentRuns(totalRun: totalRun, data: data)
                     ],
                   );
                 },
