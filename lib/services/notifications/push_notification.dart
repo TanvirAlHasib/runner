@@ -52,7 +52,7 @@ class PushNotification {
     _messaging.onRegistered.listen((String id) async {
       FID = id;
       await _firebaseFirestore.collection(FirebaseConstants.collectionName).doc("user_gmail")
-      .collection(FirebaseConstants.fidCollection).add({
+      .collection(FirebaseConstants.fidCollection).doc(FirebaseConstants.fidDocID).set({
         "FID": FID
       });
       debugPrint("FCM: $FID");
