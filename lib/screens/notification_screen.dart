@@ -38,6 +38,17 @@ class _NotificationScreenState extends State<NotificationScreen> {
     await batch.commit();
   }
 
+  // delete all notifications
+  Future<void> deleteAllNotifications() async{
+    final snapshot = await _firebaseFirestore.collection(FirebaseConstants.collectionName)
+        .doc("user_gmail").collection(FirebaseConstants.notificationCollection).get();
+    final batch = _firebaseFirestore.batch();
+    for(final doc in snapshot.docs){
+      batch.delete(doc.reference);
+    }
+    await batch.commit();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,7 +74,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
         ),
         actions: [
           TextButton(
-            onPressed: () {},
+            onPressed: () => deleteAllNotifications(),
             child: Text(
               'Clear all',
               style: TextStyle(
