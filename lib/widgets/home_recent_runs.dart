@@ -16,7 +16,19 @@ class HomeRecentRuns extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SliverList.builder(
+    return totalRun == 0 ? SliverToBoxAdapter(
+      child: Column(
+        spacing: 8,
+        mainAxisAlignment: .center,
+        children: [
+          LottieBuilder.asset("lib/assets/animations/space_runner.json", height: 120,),
+          Text("No, runs yet!!", style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+              fontWeight: FontWeight.w700,
+              color: Color(ColorConstraints.bodyFontColor)
+          ),),
+        ],
+      ),
+    ) : SliverList.builder(
       itemCount: totalRun,
       itemBuilder: (context, index) {
         final runs = data![index].data();

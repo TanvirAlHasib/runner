@@ -64,24 +64,24 @@ class HomeCustomScrollView extends StatelessWidget {
                   height: 2,
                 ),
                 Text.rich(TextSpan(
-                    text: totalDistance.toStringAsFixed(2),
-                    style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-                        color: Color(ColorConstraints.buttonColor),
-                        fontWeight: FontWeight.w700
-                    ),
-                    children: [
-                      WidgetSpan(child: const SizedBox(
-                        width: 5,
-                      )),
-                      TextSpan(
-                          text: "KM",
-                          style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-                              color: Color(ColorConstraints.buttonColor),
-                              fontWeight: FontWeight.w700,
-                              fontSize: 23
-                          )
+                  text: totalDistance.toStringAsFixed(2),
+                  style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                    color: Color(ColorConstraints.buttonColor),
+                    fontWeight: FontWeight.w700
+                  ),
+                  children: [
+                    WidgetSpan(child: const SizedBox(
+                      width: 5,
+                    )),
+                    TextSpan(
+                      text: "KM",
+                      style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                          color: Color(ColorConstraints.buttonColor),
+                          fontWeight: FontWeight.w700,
+                          fontSize: 23
                       )
-                    ]
+                    )
+                  ]
                 )),
                 const SizedBox(
                   height: 12,
