@@ -39,6 +39,7 @@ class RegistrationTextField extends StatelessWidget {
         ),
         const SizedBox(height: 9),
         TextFormField(
+          onTapOutside: (event) => FocusManager.instance.primaryFocus?.unfocus(),
           controller: controller,
           obscureText: obscureText,
           keyboardType: keyboardType,

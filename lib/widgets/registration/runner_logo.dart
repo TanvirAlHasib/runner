@@ -13,7 +13,7 @@ class RunnerLogo extends StatelessWidget {
           color: Color(ColorConstraints.buttonColor),
           size: 32,
         ),
-        const SizedBox(width: 10),
+        const SizedBox(width: 6),
         Text(
           'RUNNER',
           style: TextStyle(

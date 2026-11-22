@@ -53,7 +53,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(ColorConstraints.backGroundColor),
+      backgroundColor: Color(ColorConstraints.splashBackground_0),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(
