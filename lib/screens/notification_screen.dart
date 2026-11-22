@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 import 'package:runner/constraints/color_constraints.dart';
 import 'package:runner/constraints/firebase_constants.dart';
 import 'package:runner/widgets/notification/notification_tile.dart';
@@ -127,12 +128,21 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     );
                   }
 
-                  if(snapshot.hasData && snapshot.data == null){
-                    return Center(
-                      child: Text("No Notifications!!", style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          fontWeight: FontWeight.w700,
-                          color: Color(ColorConstraints.bodyFontColor)
-                      ),),
+                  if(snapshot.data == null || snapshot.data!.docs.isEmpty){
+                    return Expanded(
+                      child: Column(
+                        spacing: 20,
+                        mainAxisAlignment: .center,
+                        children: [
+                          Spacer(),
+                          LottieBuilder.asset("lib/assets/animations/space_runner.json", height: 300,),
+                          Text("No Notifications!!", style: Theme.of(context).textTheme.headlineSmall!.copyWith(
+                              fontWeight: FontWeight.w700,
+                              color: Color(ColorConstraints.bodyFontColor)
+                          ),),
+                          Spacer(flex: 2,)
+                        ],
+                      ),
                     );
                   }
 
