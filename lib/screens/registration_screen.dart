@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../constraints/color_constraints.dart';
 import '../../widgets/registration/runner_logo.dart';
 import '../../widgets/registration/registration_header.dart';
@@ -183,6 +184,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 LoginRedirect(
                   onPressed: () {
                     // Navigate to LoginScreen
+                    context.goNamed("login");
                   },
                 ),
               ],

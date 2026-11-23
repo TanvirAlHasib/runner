@@ -46,7 +46,7 @@ dependencies:
   firebase_core: ^5.1.0
   cloud_firestore: ^7.1.0
   firebase_messaging: ^17.0.1
-  firebase_auth: ^7.0.1
+  firebase_auth: ^7.1.0
   flutter_local_notifications: ^23.0.2
   intl: ^0.20.3
 
@@ -76,6 +76,7 @@ flutter:
   assets:
     - lib/assets/animations/
     - lib/assets/icons/
+    - lib/assets/logo/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

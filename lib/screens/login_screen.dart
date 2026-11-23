@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../constraints/color_constraints.dart';
 import '../../widgets/registration/runner_logo.dart';
 import '../../widgets/registration/registration_text_field.dart';
@@ -44,7 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(ColorConstraints.backGroundColor),
+      backgroundColor: Color(ColorConstraints.splashBackground_0),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -209,6 +210,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   RegistrationRedirect(
                     onPressed: () {
                       // Navigate to RegistrationScreen
+                      context.pushNamed("registration");
                     },
                   ),
                 ],

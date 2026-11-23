@@ -28,10 +28,10 @@ class GoogleLoginButton extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.network(
-              'https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg',
-              height: 21,
-              width: 21,
+            Image.asset(
+              'lib/assets/logo/google_logo.png',
+              height: 30,
+              width: 30,
               errorBuilder: (context, error, stackTrace) {
                 return const Icon(Icons.g_mobiledata, size: 25);
               },
