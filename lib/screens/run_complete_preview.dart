@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
@@ -20,6 +21,7 @@ class RunCompletePreview extends StatefulWidget {
 
 class _RunCompletePreviewState extends State<RunCompletePreview> {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   bool isLoading = false;
   @override
   Widget build(BuildContext context) {
@@ -123,7 +125,7 @@ class _RunCompletePreviewState extends State<RunCompletePreview> {
                       setState(() {
                         isLoading = true;
                       });
-                      _firebaseFirestore.collection(FirebaseConstants.collectionName).doc("user_gmail")
+                      _firebaseFirestore.collection(FirebaseConstants.collectionName).doc(_firebaseAuth.currentUser!.uid)
                           .collection(FirebaseConstants.history).add({
                         "title": widget.runDetailsModel.title,
                         "distance": widget.runDetailsModel.distance,

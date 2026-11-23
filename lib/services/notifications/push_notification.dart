@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:runner/constraints/firebase_constants.dart';
@@ -8,6 +9,7 @@ import 'package:runner/services/notifications/show_local_notification.dart';
 class PushNotification {
   static final FirebaseMessaging _messaging = FirebaseMessaging.instance;
   static final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
+  static final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   // initializing the firebase messaging
   static Future<void> init() async{
     // notification setting
@@ -19,7 +21,7 @@ class PushNotification {
     );
 
     getMessage();
-    getFIDToken();
+    await getFIDToken();
   }
 
   // getting the message
@@ -35,7 +37,7 @@ class PushNotification {
         message: message.notification?.body ?? "You received a new message",
         createdAt: DateTime.now()
       );
-      await _firebaseFirestore.collection(FirebaseConstants.collectionName).doc("user_gmail")
+      await _firebaseFirestore.collection(FirebaseConstants.collectionName).doc(_firebaseAuth.currentUser!.uid)
       .collection(FirebaseConstants.notificationCollection).add({
         "title": _notification.title,
         "message": _notification.message,
@@ -51,7 +53,7 @@ class PushNotification {
     String? FID;
     _messaging.onRegistered.listen((String id) async {
       FID = id;
-      await _firebaseFirestore.collection(FirebaseConstants.collectionName).doc("user_gmail")
+      await _firebaseFirestore.collection(FirebaseConstants.collectionName).doc(_firebaseAuth.currentUser!.uid)
       .collection(FirebaseConstants.fidCollection).doc(FirebaseConstants.fidDocID).set({
         "FID": FID
       });

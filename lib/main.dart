@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -23,18 +24,19 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async{
 
   // storing the notification in same place
   // storing notification history
-  FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
-  NotificationModel _notification = NotificationModel(
+  FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+  FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+  NotificationModel notification = NotificationModel(
       title: message.notification?.title ?? "New Notification",
       message: message.notification?.body ?? "You received a new message",
       createdAt: DateTime.now()
   );
-  await _firebaseFirestore.collection(FirebaseConstants.collectionName).doc("user_gmail")
+  await firebaseFirestore.collection(FirebaseConstants.collectionName).doc(firebaseAuth.currentUser!.uid)
       .collection(FirebaseConstants.notificationCollection).add({
-    "title": _notification.title,
-    "message": _notification.message,
-    "createdAt": _notification.createdAt,
-    "isUnread": _notification.isUnread
+    "title": notification.title,
+    "message": notification.message,
+    "createdAt": notification.createdAt,
+    "isUnread": notification.isUnread
   });
 
 }

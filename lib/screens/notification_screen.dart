@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
@@ -21,12 +22,13 @@ class _NotificationScreenState extends State<NotificationScreen> {
   Color get primaryText => Color(ColorConstraints.headLineFontColor);
   Color get secondaryText => Color(ColorConstraints.bodyFontColor);
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   // marking all notifications read.
   Future<void> markAllNotificationsAsRead() async {
     final snapshot = await _firebaseFirestore
         .collection(FirebaseConstants.collectionName)
-        .doc("user_gmail")
+        .doc(_firebaseAuth.currentUser!.uid)
         .collection(FirebaseConstants.notificationCollection)
         .where("isUnread", isEqualTo: true)
         .get();
@@ -42,7 +44,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
   // delete all notifications
   Future<void> deleteAllNotifications() async{
     final snapshot = await _firebaseFirestore.collection(FirebaseConstants.collectionName)
-        .doc("user_gmail").collection(FirebaseConstants.notificationCollection).get();
+        .doc(_firebaseAuth.currentUser!.uid).collection(FirebaseConstants.notificationCollection).get();
     final batch = _firebaseFirestore.batch();
     for(final doc in snapshot.docs){
       batch.delete(doc.reference);
@@ -110,7 +112,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
             Expanded(
               child: StreamBuilder(
                 stream: _firebaseFirestore.collection(FirebaseConstants.collectionName)
-                    .doc("user_gmail").collection(FirebaseConstants.notificationCollection).snapshots(),
+                    .doc(_firebaseAuth.currentUser!.uid).collection(FirebaseConstants.notificationCollection).snapshots(),
                 builder: (context, snapshot) {
 
                   if(snapshot.connectionState == ConnectionState.waiting){

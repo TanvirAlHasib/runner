@@ -1,6 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:runner/constraints/firebase_constants.dart';
+import 'package:runner/models/user_model.dart';
 import 'package:runner/utils/toast.dart';
 import '../../constraints/color_constraints.dart';
 import '../../widgets/registration/runner_logo.dart';
@@ -19,6 +22,7 @@ class RegistrationScreen extends StatefulWidget {
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -41,11 +45,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   Future<void> register() async {
     if (!_formKey.currentState!.validate()) return;
     if (!_acceptedTerms) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please accept Terms & Conditions'),
-        ),
-      );
+      Toast.showMessage(body: 'Please accept Terms & Conditions', context: context);
       return;
     }
     //Firebase integration
@@ -58,6 +58,15 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         }
         Toast.showMessage(body: "Registration successful!!", context: context);
         context.goNamed("login");
+        final userModel = UserModel(
+          uid: user.user!.uid,
+          username: _nameController.text,
+          email: _emailController.text,
+          createdAt: DateTime.now()
+        );
+        _firebaseFirestore.collection(FirebaseConstants.collectionName)
+        .doc(user.user!.uid).collection(FirebaseConstants.user).add(userModel.toMap());
+        await _firebaseAuth.signOut();
       }
 
     } on FirebaseAuthException catch(e){

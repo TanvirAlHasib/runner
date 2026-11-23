@@ -38,11 +38,12 @@ class _LoginScreenState extends State<LoginScreen> {
     try{
       final credentials = await _firebaseAuth.signInWithEmailAndPassword(email: _emailController.text,
           password: _passwordController.text);
-      if(credentials.credential!.accessToken != null){
+      if(credentials.user != null){
         if(!mounted) {
           return;
         }
         Toast.showMessage(body: "Login successfully!!", context: context);
+        context.goNamed("home", extra: credentials.user?.displayName);
       }
     } on FirebaseAuthException catch(e){
       if(!mounted) {

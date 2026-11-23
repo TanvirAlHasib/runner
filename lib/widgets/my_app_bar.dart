@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:runner/constraints/firebase_constants.dart';
@@ -8,11 +9,12 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   MyAppBar({super.key});
 
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   // Keep the stream instance instead of recreating it on rebuild.
   late final Stream<QuerySnapshot<Map<String, dynamic>>> _unreadNotificationStream = _firebaseFirestore
       .collection(FirebaseConstants.collectionName)
-      .doc("user_gmail")
+      .doc(_firebaseAuth.currentUser!.uid)
       .collection(FirebaseConstants.notificationCollection)
       .where("isUnread", isEqualTo: true)
       .limit(1)
