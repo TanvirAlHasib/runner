@@ -44,6 +44,11 @@ class _LoginScreenState extends State<LoginScreen> {
         }
         Toast.showMessage(body: "Login successfully!!", context: context);
       }
+    } on FirebaseAuthException catch(e){
+      if(!mounted) {
+        return;
+      }
+      Toast.showMessage(body: e.message!, context: context);
     } on FirebaseException catch(e){
       if(!mounted) {
         return;

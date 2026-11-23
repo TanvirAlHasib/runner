@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:runner/utils/toast.dart';
 import '../../constraints/color_constraints.dart';
 import '../../widgets/registration/runner_logo.dart';
 import '../../widgets/registration/registration_header.dart';
@@ -16,7 +18,7 @@ class RegistrationScreen extends StatefulWidget {
 }
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
-
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -36,9 +38,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     super.dispose();
   }
 
-  void register() {
+  Future<void> register() async {
     if (!_formKey.currentState!.validate()) return;
-
     if (!_acceptedTerms) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -47,8 +48,34 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       );
       return;
     }
-
     //Firebase integration
+    try{
+      final user = await _firebaseAuth.createUserWithEmailAndPassword(
+          email: _emailController.text, password: _passwordController.text);
+      if(user.user != null){
+        if(!mounted){
+          return;
+        }
+        Toast.showMessage(body: "Registration successful!!", context: context);
+        context.goNamed("login");
+      }
+
+    } on FirebaseAuthException catch(e){
+      if(!mounted){
+        return;
+      }
+      Toast.showMessage(body: e.message!, context: context);
+    } on FirebaseException catch(e){
+      if(!mounted){
+        return;
+      }
+      Toast.showMessage(body: e.message!, context: context);
+    } catch (e){
+      if(!mounted){
+        return;
+      }
+      Toast.showMessage(body: "Something went wrong!!", context: context);
+    }
   }
 
   @override
