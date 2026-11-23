@@ -3,8 +3,10 @@ import 'package:go_router/go_router.dart';
 import 'package:runner/constraints/color_constraints.dart';
 import 'package:runner/models/run_details_model.dart';
 import 'package:runner/screens/home_screen.dart';
+import 'package:runner/screens/login_screen.dart';
 import 'package:runner/screens/map_screen.dart';
 import 'package:runner/screens/notification_screen.dart';
+import 'package:runner/screens/registration_screen.dart';
 import 'package:runner/screens/run_complete_preview.dart';
 import 'package:runner/screens/run_screen.dart';
 import 'package:runner/screens/splash_screen.dart';
@@ -23,6 +25,18 @@ final GoRouter router = GoRouter(
       path: "/notification",
       name: "notification",
       builder: (context, state) => NotificationScreen(),
+    ),
+    // for login screen
+    GoRoute(
+      path: "/login",
+      name: "login",
+      builder: (context, state) => LoginScreen(),
+    ),
+    // for registration screen
+    GoRoute(
+      path: "/registration",
+      name: "registration",
+      builder: (context, state) => RegistrationScreen(),
     ),
     // for stateful bottom navigation
     StatefulShellRoute.indexedStack(
