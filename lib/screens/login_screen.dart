@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:runner/utils/toast.dart';
 import '../../constraints/color_constraints.dart';
 import '../../widgets/registration/runner_logo.dart';
 import '../../widgets/registration/registration_text_field.dart';
@@ -16,12 +18,10 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final _formKey = GlobalKey<FormState>();
-
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-
   bool _obscurePassword = true;
   bool _isLoading = false;
 
@@ -32,10 +32,30 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void login() {
+  Future<void> login() async {
     if (!_formKey.currentState!.validate()) return;
+    // Firebase here.
+    try{
+      final credentials = await _firebaseAuth.signInWithEmailAndPassword(email: _emailController.text,
+          password: _passwordController.text);
+      if(credentials.credential!.accessToken != null){
+        if(!mounted) {
+          return;
+        }
+        Toast.showMessage(body: "Login successfully!!", context: context);
+      }
+    } on FirebaseException catch(e){
+      if(!mounted) {
+        return;
+      }
+      Toast.showMessage(body: e.message!, context: context);
+    } catch (e){
+      if(!mounted) {
+        return;
+      }
+      Toast.showMessage(body: "Something went wrong!!", context: context);
+    }
 
-    // Connect your login API/Firebase here.
   }
 
   void googleLogin() {
