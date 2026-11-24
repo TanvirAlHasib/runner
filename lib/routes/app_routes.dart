@@ -6,6 +6,7 @@ import 'package:runner/screens/home_screen.dart';
 import 'package:runner/screens/login_screen.dart';
 import 'package:runner/screens/map_screen.dart';
 import 'package:runner/screens/notification_screen.dart';
+import 'package:runner/screens/profile_screen.dart';
 import 'package:runner/screens/registration_screen.dart';
 import 'package:runner/screens/run_complete_preview.dart';
 import 'package:runner/screens/run_screen.dart';
@@ -82,7 +83,16 @@ final GoRouter router = GoRouter(
               ]
             )
           ]
-        )
+        ),
+        StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: "/profile",
+                name: "profile",
+                builder: (context, state) => ProfileScreen(),
+              )
+            ]
+        ),
       ]
     )
   ]
@@ -131,6 +141,11 @@ class AppRoutes extends StatelessWidget {
               icon: Icon(Icons.run_circle_outlined),
               activeIcon: Icon(Icons.run_circle),
               label: "Run",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_2_outlined),
+              activeIcon: Icon(Icons.person),
+              label: "Profile",
             )
           ],
         ),
