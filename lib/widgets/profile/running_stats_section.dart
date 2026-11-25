@@ -36,7 +36,7 @@ class RunningStatsSection extends StatelessWidget {
             totalTime = totalTime + eachData["duration"];
             avgPace = avgPace + eachData["pace"];
           }
-          avgPace = avgPace/totalTime;
+          avgPace = avgPace/totalRun;
         }
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,

@@ -83,18 +83,20 @@ class _HomeScreenState extends State<HomeScreen> {
                   // getting the data
                   final data = snapshot.data?.docs;
                   // getting total runs of the week
-                  final totalRun = data?.length;
+                  final totalRun = data?.length ?? 0;
                   // getting total time and avg pace
                   double avgPace = 0;
                   double totalTime = 0;
                   double totalDistance = 0;
-                  for(final element in data!){
-                    final eachData = element.data();
-                    avgPace = avgPace + eachData["pace"];
-                    totalTime = totalTime + eachData["duration"];
-                    totalDistance = totalDistance + eachData["distance"];
+                  if(data != null){
+                    for(final element in data){
+                      final eachData = element.data();
+                      avgPace = avgPace + eachData["pace"];
+                      totalTime = totalTime + eachData["duration"];
+                      totalDistance = totalDistance + eachData["distance"];
+                    }
+                    avgPace = avgPace / totalRun;
                   }
-                  avgPace = avgPace / totalRun!;
 
                   return HomeCustomScrollView(totalDistance: totalDistance, totalRun: totalRun,
                       totalTime: totalTime, avgPace: avgPace, data: data);
