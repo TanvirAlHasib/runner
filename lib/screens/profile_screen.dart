@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:runner/constraints/color_constraints.dart';
+import 'package:runner/constraints/firebase_constants.dart';
 import 'package:runner/widgets/profile/profile_header.dart';
 import 'package:runner/widgets/profile/running_stats_section.dart';
 import 'package:runner/widgets/profile/profile_menu_section.dart';
@@ -13,6 +15,7 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
+    final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
 
     return Scaffold(
       backgroundColor: Color(ColorConstraints.splashBackground_0),
@@ -24,30 +27,44 @@ class ProfileScreen extends StatelessWidget {
           ),
           child: Column(
             children: [
-              ProfileHeader(
-                username: user?.displayName ?? "Runner",
-                email: user?.email ?? "No email available",
-                photoURL: user?.photoURL,
-                onEditProfile: () {
-                  context.pushNamed("editProfile");
-                },
-                onSettings: () {
-                  context.pushNamed("settings");
-                },
+              StreamBuilder(
+                stream: _firebaseFirestore.collection(FirebaseConstants.collectionName).doc(user?.uid)
+                  .collection(FirebaseConstants.user).snapshots(),
+                builder: (context, asyncSnapshot) {
+
+                  if(asyncSnapshot.connectionState == ConnectionState.waiting){
+                    return Center(
+                      child: CircularProgressIndicator.adaptive(),
+                    );
+                  }
+
+                  final userData = asyncSnapshot.data?.docs.first.data();
+                  return ProfileHeader(
+                    username: userData?["username"] ?? "Runner",
+                    email: userData?["email"] ?? "No email available",
+                    photoURL: userData?["photoURL"],
+                    onEditProfile: () {
+                      //context.pushNamed("editProfile");
+                    },
+                    onSettings: () {
+                      //context.pushNamed("settings");
+                    },
+                  );
+                }
               ),
 
               const SizedBox(height: 35),
 
-              const RunningStatsSection(),
+              RunningStatsSection(),
 
               const SizedBox(height: 35),
 
               ProfileMenuSection(
                 onPersonalInfo: () {
-                  context.pushNamed("editProfile");
+                  //context.pushNamed("editProfile");
                 },
                 onSettings: () {
-                  context.pushNamed("settings");
+                  //context.pushNamed("settings");
                 },
                 onHelp: () {
                   // Navigate to help screen
