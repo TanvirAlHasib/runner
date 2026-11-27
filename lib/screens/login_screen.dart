@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:runner/utils/toast.dart';
 import '../../constraints/color_constraints.dart';
 import '../../widgets/registration/runner_logo.dart';
@@ -19,6 +20,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -64,8 +66,26 @@ class _LoginScreenState extends State<LoginScreen> {
 
   }
 
-  void googleLogin() {
-    // Implement Google authentication here.
+  Future<void> googleLogin() async {
+    try {
+      final GoogleSignInAccount user = await _googleSignIn.authenticate();
+      final GoogleSignInAuthentication authentication = user.authentication;
+
+      final credential = GoogleAuthProvider.credential(idToken: authentication.idToken,);
+      final result = await FirebaseAuth.instance.signInWithCredential(credential);
+
+      if (result.user != null) {
+        if (!mounted) return;
+        context.goNamed("home");
+      }
+
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+      Toast.showMessage(body: e.message ?? "Authentication failed!", context: context,);
+    } catch (e) {
+      if (!mounted) return;
+      Toast.showMessage(body: "Login failed!!", context: context,);
+    }
   }
 
   @override

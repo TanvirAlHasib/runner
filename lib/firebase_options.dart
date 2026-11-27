@@ -56,13 +56,13 @@ class DefaultFirebaseOptions {
     projectId: 'runner-a747f',
     storageBucket: 'runner-a747f.firebasestorage.app',
   );
-
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyCHpmWpdgSf9ZV8yUxiCq7TvDT0qbVqWF0',
     appId: '1:294298699621:ios:89c002b0e626c808e2438c',
     messagingSenderId: '294298699621',
     projectId: 'runner-a747f',
     storageBucket: 'runner-a747f.firebasestorage.app',
+    androidClientId: '294298699621-jr55rjqchg24dv0dt1bfa1eaa4vnp2mp.apps.googleusercontent.com',
     iosClientId: '294298699621-1llirnbfm36aigb8eap5r761e0olroke.apps.googleusercontent.com',
     iosBundleId: 'com.stardust.runner.runner',
   );
