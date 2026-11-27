@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:runner/constraints/firebase_constants.dart';
 import 'package:runner/utils/toast.dart';
 import '../../constraints/color_constraints.dart';
 import '../../widgets/registration/runner_logo.dart';
@@ -72,10 +74,18 @@ class _LoginScreenState extends State<LoginScreen> {
       final GoogleSignInAuthentication authentication = user.authentication;
 
       final credential = GoogleAuthProvider.credential(idToken: authentication.idToken,);
-      final result = await FirebaseAuth.instance.signInWithCredential(credential);
+      final result = await _firebaseAuth.signInWithCredential(credential);
 
       if (result.user != null) {
         if (!mounted) return;
+        FirebaseFirestore.instance.collection(FirebaseConstants.collectionName)
+        .doc(_firebaseAuth.currentUser!.uid).collection(FirebaseConstants.user)
+        .add({
+          'username': result.user?.displayName ?? 'Runner',
+          'email': result.user?.email ?? 'Email not found',
+          'photoURL': result.user?.photoURL,
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
         context.goNamed("home");
       }
 
