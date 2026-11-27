@@ -29,7 +29,7 @@ class ProfileScreen extends StatelessWidget {
             children: [
               StreamBuilder(
                 stream: _firebaseFirestore.collection(FirebaseConstants.collectionName).doc(user?.uid)
-                  .collection(FirebaseConstants.user).snapshots(),
+                  .collection(FirebaseConstants.user).doc(FirebaseConstants.userID).snapshots(),
                 builder: (context, asyncSnapshot) {
 
                   if(asyncSnapshot.connectionState == ConnectionState.waiting){
@@ -38,11 +38,11 @@ class ProfileScreen extends StatelessWidget {
                     );
                   }
 
-                  final userData = asyncSnapshot.data?.docs.first.data();
+                  final userData = asyncSnapshot.data!.data()!;
                   return ProfileHeader(
-                    username: userData?["username"] ?? "Runner",
-                    email: userData?["email"] ?? user?.email ?? "No email available",
-                    photoURL: userData?["photoURL"],
+                    username: userData["username"] ?? "Runner",
+                    email: userData["email"] ?? user?.email ?? "No email available",
+                    photoURL: userData["photoURL"],
                     onEditProfile: () {
                       //context.pushNamed("editProfile");
                     },

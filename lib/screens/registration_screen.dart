@@ -65,7 +65,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           createdAt: DateTime.now()
         );
         _firebaseFirestore.collection(FirebaseConstants.collectionName)
-        .doc(user.user!.uid).collection(FirebaseConstants.user).add(userModel.toMap());
+        .doc(user.user!.uid).collection(FirebaseConstants.user)
+            .doc(FirebaseConstants.userID)
+            .set(userModel.toMap(), SetOptions(merge: true));
         await _firebaseAuth.signOut();
       }
 

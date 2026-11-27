@@ -80,12 +80,13 @@ class _LoginScreenState extends State<LoginScreen> {
         if (!mounted) return;
         FirebaseFirestore.instance.collection(FirebaseConstants.collectionName)
         .doc(_firebaseAuth.currentUser!.uid).collection(FirebaseConstants.user)
-        .add({
+        .doc(FirebaseConstants.userID)
+        .set({
           'username': result.user?.displayName ?? 'Runner',
           'email': result.user?.email ?? 'Email not found',
           'photoURL': result.user?.photoURL,
           'updatedAt': FieldValue.serverTimestamp(),
-        });
+        }, SetOptions(merge: true));
         context.goNamed("home");
       }
 

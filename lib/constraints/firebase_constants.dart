@@ -6,4 +6,5 @@ class FirebaseConstants {
   static final String fidCollection = "fid";
   static final String fidDocID = "fidID";
   static final String user = "user";
+  static final String userID = "profile";
 }

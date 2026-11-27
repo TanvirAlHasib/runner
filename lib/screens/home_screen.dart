@@ -26,33 +26,31 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: .start,
           children: [
-            StreamBuilder(
-              stream: _firebaseFirestore.collection(FirebaseConstants.collectionName)
-              .doc(_firebaseAuth.currentUser!.uid).collection(FirebaseConstants.user).snapshots(),
-              builder: (context, snapshot) {
-                if(snapshot.connectionState == ConnectionState.waiting){
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
+          StreamBuilder(
+            stream: _firebaseFirestore.collection(FirebaseConstants.collectionName)
+                .doc(_firebaseAuth.currentUser!.uid)
+                .collection(FirebaseConstants.user)
+                .doc(FirebaseConstants.userID)
+                .snapshots(),
+            builder: (context, snapshot) {
 
-                if(snapshot.hasError){
-                  return Center(
-                    child: Text("Error!!", style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: Color(ColorConstraints.bodyFontColor)
-                    ),),
-                  );
-                }
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
 
-                final userData = snapshot.data!.docs.first.data();
-                final username = userData['username'] ?? 'Runner';
-                return Text("Welcome back, $username", style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                    color: Color(ColorConstraints.bodyFontColor),
-                    fontWeight: FontWeight.w600
-                ),);
-              },
-            ),
+              final userData = snapshot.data!.data()!;
+              final username = userData['username'] ?? 'Runner';
+              return Text(
+                "Welcome back, $username",
+                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                  color: Color(ColorConstraints.bodyFontColor),
+                  fontWeight: FontWeight.w600,
+                ),
+              );
+            },
+          ),
             const SizedBox(
               height: 10,
             ),
@@ -95,7 +93,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       totalTime = totalTime + eachData["duration"];
                       totalDistance = totalDistance + eachData["distance"];
                     }
-                    avgPace = avgPace / totalRun;
+                    if(totalRun != 0){
+                      avgPace = avgPace / totalRun;
+                    }
                   }
 
                   return HomeCustomScrollView(totalDistance: totalDistance, totalRun: totalRun,
