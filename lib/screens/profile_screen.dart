@@ -41,7 +41,7 @@ class ProfileScreen extends StatelessWidget {
                   final userData = asyncSnapshot.data?.docs.first.data();
                   return ProfileHeader(
                     username: userData?["username"] ?? "Runner",
-                    email: userData?["email"] ?? "No email available",
+                    email: userData?["email"] ?? user?.email ?? "No email available",
                     photoURL: userData?["photoURL"],
                     onEditProfile: () {
                       //context.pushNamed("editProfile");
